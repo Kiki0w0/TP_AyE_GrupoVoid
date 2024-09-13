@@ -27,28 +27,6 @@
 \maketitle
 
 \section{Soluciones}
-\subsection{Predicados y auxiliares}
-
-% Predicado ES CIUDAD
-\pred{esCiudad}{ciudad: \TLista{\str \times \ent}}{ciudad_1 \geq 50000}
-
-% Predicado SIN REPETIDOS
-\pred{sinRepetidos}{ciudad: \TLista{\str \times \ent}}{\paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud{ciudad} \implicaLuego \neg (\existe[unalinea]{j}{\ent}{0 \leq {j}< \longitud{ciudad} \yLuego ciudad[i]_0 = ciudad[j]_0}}}
-
-% Predicado MATRIZ CUADRADA
-\pred{esMatrizCuadrada}{distancias: \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i}{\ent}{0 \leq {i}< \longitud{distancias} \implicaLuego {\mid}{distancias}{\mid} = {\mid}{distancias[i]{\mid}}}}
-
-% Predicado ES MATRIZ SIMETRICA
-\pred{esMatrizSimetrica}{distancias: \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i}{\ent}{0 \leq {i}< \longitud{distancias} \implicaLuego{{(\paraTodo[unalinea]{j}{\ent}{0 \leq {j}< \longitud{distancias} \implicaLuego {\mid}{distancias[i][j]}{\mid} = {\mid}{distancias[j][i]{\mid}}})}}}}
-
-% Predicado ESTAN DENTRO DEL RANGO
-\pred{estanDentroDelRango}{distancias: \TLista{\TLista{\ent}}, desde: \ent, hasta: \ent}{0 \leq desde < \longitud{distancias} \land 0 \leq hasta < \longitud{distancias}}
-
-% Predicado ES CAMINO
-\pred{esCamino}{distancias: \TLista{\TLista{\ent}}, camino: \TLista{\ent}, desde: {\ent}, hasta: {\ent}}{\longitud{camino} > {1} \yLuego camino[0] = desde \land camino[\longitud{camino} - 1] = hasta \land \paraTodo[unalinea]{i}{\ent}{0 \leq {i}< \longitud{camino} - 1 \yLuego 0 \leq camino[i] < \longitud{distancias}}}
-
-\vspace{0.3cm}
-
 \subsection{Procedimientos}
 
 \begin{enumerate} \setlength\itemsep{0cm}
@@ -76,6 +54,30 @@
 	\end{proc}
 	\vspace{0.3cm}
 \end{enumerate}
+
+
+\subsection{Predicados y auxiliares}
+\vspace{0.3cm}
+
+% Predicado ES CIUDAD
+\pred{esCiudad}{ciudad: \TLista{\str \times \ent}}{ciudad_1 \geq 50000}
+
+% Predicado SIN REPETIDOS
+\pred{sinRepetidos}{ciudad: \TLista{\str \times \ent}}{\paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud{ciudad} \implicaLuego \neg (\existe[unalinea]{j}{\ent}{0 \leq {j}< \longitud{ciudad} \yLuego ciudad[i]_0 = ciudad[j]_0}}}
+
+% Predicado MATRIZ CUADRADA
+\pred{esMatrizCuadrada}{distancias: \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i}{\ent}{0 \leq {i}< \longitud{distancias} \implicaLuego {\mid}{distancias}{\mid} = {\mid}{distancias[i]{\mid}}}}
+
+% Predicado ES MATRIZ SIMETRICA
+\pred{esMatrizSimetrica}{distancias: \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i}{\ent}{0 \leq {i}< \longitud{distancias} \implicaLuego{{(\paraTodo[unalinea]{j}{\ent}{0 \leq {j}< \longitud{distancias} \implicaLuego {\mid}{distancias[i][j]}{\mid} = {\mid}{distancias[j][i]{\mid}}})}}}}
+
+% Predicado ESTAN DENTRO DEL RANGO
+\pred{estanDentroDelRango}{distancias: \TLista{\TLista{\ent}}, desde: \ent, hasta: \ent}{0 \leq desde < \longitud{distancias} \land 0 \leq hasta < \longitud{distancias}}
+
+% Predicado ES CAMINO
+\pred{esCamino}{distancias: \TLista{\TLista{\ent}}, camino: \TLista{\ent}, desde: {\ent}, hasta: {\ent}}{\longitud{camino} > {1} \yLuego camino[0] = desde \land camino[\longitud{camino} - 1] = hasta \land \paraTodo[unalinea]{i}{\ent}{0 \leq {i}< \longitud{camino} - 1 \yLuego 0 \leq camino[i] < \longitud{distancias}}}
+
+\vspace{0.3cm}
 
 \section{Ejemplo de sección}
 \subsection{Subsección: ambientes comunes de \LaTeX}
