@@ -26,7 +26,34 @@
 
 \maketitle
 
+
+
 \section{Soluciones}
+
+\subsection{Predicados y auxiliares}
+\vspace{0.3cm}
+
+% Predicado ES CIUDAD
+\pred{esCiudad}{ciudad: \TLista{\str \times \ent}}{ciudad_1 \geq 50000}
+
+% Predicado SIN REPETIDOS
+\pred{sinRepetidos}{ciudad: \TLista{\str \times \ent}}{\paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud{ciudad} \implicaLuego \neg (\existe[unalinea]{j}{\ent}{0 \leq {j}< \longitud{ciudad} \yLuego ciudad[i]_0 = ciudad[j]_0}}}
+
+% Predicado MATRIZ CUADRADA
+\pred{esMatrizCuadrada}{distancias: \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i}{\ent}{0 \leq {i}< \longitud{distancias} \implicaLuego {\mid}{distancias}{\mid} = {\mid}{distancias[i]{\mid}}}}
+
+% Predicado ES MATRIZ SIMETRICA
+\pred{esMatrizSimetrica}{distancias: \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i}{\ent}{0 \leq {i}< \longitud{distancias} \implicaLuego{{(\paraTodo[unalinea]{j}{\ent}{0 \leq {j}< \longitud{distancias} \implicaLuego {\mid}{distancias[i][j]}{\mid} = {\mid}{distancias[j][i]{\mid}}})}}}}
+
+% Predicado ESTAN DENTRO DEL RANGO
+\pred{estanDentroDelRango}{distancias: \TLista{\TLista{\ent}}, desde: \ent, hasta: \ent}{0 \leq desde < \longitud{distancias} \land 0 \leq hasta < \longitud{distancias}}
+
+% Predicado ES CAMINO
+\pred{esCamino}{distancias: \TLista{\TLista{\ent}}, camino: \TLista{\ent}, desde: {\ent}, hasta: {\ent}}{\longitud{camino} > {1} \yLuego camino[0] = desde \land camino[\longitud{camino} - 1] = hasta \land \paraTodo[unalinea]{i}{\ent}{0 \leq {i}< \longitud{camino} - 1 \yLuego 0 \leq camino[i] < \longitud{distancias}}}
+
+\vspace{0.3cm}
+
+
 \subsection{Procedimientos}
 
 \begin{enumerate} \setlength\itemsep{0cm}
@@ -53,149 +80,119 @@
 		\asegura{res = \True \Iff \existe[unalinea]{camino}{\TLista{\ent}}{esCamino(distancias,camino,desde,hasta)}}
 	\end{proc}
 	\vspace{0.3cm}
+    \item \begin{proc}{cantidadCaminosNSaltos}{\Inout conexion : \TLista{\TLista{\ent}}, \In n : \ent}{}
+    \requiere{esMatrizCuadrada(conexion)}
+    \requiere{esMatrizSimetrica(conexion)}
+    \requiere{esMatrizConSoloUnosYCeros(conexion)}
+    \requiere{n > 0}
+    \requiere{conexion = C_0}
+    \asegura{\\
+        (\exists \ conexiones : \TLista{\TLista{\TLista{\ent}}}) \ ( \longitud{conexiones} = n \land conexiones[0] = C_0 \land \\
+        \paraTodo[unalinea]{i}{\ent}{((1 \leq i < n) \yLuego \longitud{conexiones[i]} = \longitud{C_0}) \implicaLuego \\
+        (esMultiplicacionDeMatrices(conexiones[i-1], conexiones[0], conexiones[i]) \yLuego \\ conexion = conexiones[n-1]))}\\
+    }
+    
+    \pred{esMatrizConSoloUnosYCeros}{conexion : \TLista{\TLista{\ent}}}{
+        \paraTodo[unalinea]{i}{\ent}{(0 \leq i < \longitud{conexion}) \implicaLuego \\
+        (\paraTodo[unalinea]{j}{\ent}{(0 \leq j < \longitud{conexion}) \implicaLuego \\
+        conexion[i][j] = 0 \lor conexion[i][j] = 1)}}
+    }
+
+    \pred{esMultiplicacionDeMatrices}{matrizA : \TLista{\TLista{\ent}}, matrizB : \TLista{\TLista{\ent}}, matrizC : \TLista{\TLista{\ent}}}{
+        ( \longitud{matrizA} = \longitud{matrizB} \land \longitud{matrizA[0]} = \longitud{matrizA} \land \longitud{matrizB[0]} = \longitud{matrizA[0]} ) \yLuego \\
+        (\paraTodo[unalinea]{i}{\ent}{(0 \leq i < \longitud{matrizA}) \yLuego \longitud{matrizA[i]} = \longitud{matrizA[0]} \implicaLuego \\
+        (\paraTodo[unalinea]{j}{\ent}{(0 \leq j < \longitud{matrizB}) \yLuego \longitud{matrizB[i]} = \longitud{matrizB[0]} \implicaLuego \\
+        matrizC[i][j] = \sum_{k=0}^{\longitud{matrizA}-1} matrizA[i][k] \times matrizB[k][j])) }}
+    }
+    \end{proc}
+    \vspace{0.3cm}
+    \item \begin{proc}{caminoMinimo}{\In origen : \ent, \In destino : \ent, \In distancias : \TLista{\TLista{\ent}}}{\TLista{\ent}}
+    \requiere{esMatrizCuadrada(distancias)}
+    \requiere{esMatrizSimetrica(distancias)}
+    \requiere{estanDentroDelRango(distancias, origen, destino)}
+    \asegura{\\
+        (\exists \ camino : \TLista{\ent}) \ ( esCamino(distancias, camino, origen, destino) \land res = camino \land \\
+        \paraTodo[unalinea]{camino'}{\TLista{\ent}}{esCamino(camino', distancias, origen, destino) \implicaLuego \\
+        distanciaTotal(camino) \leq distanciaTotal(camino')}\\
+    }
+    
+    \aux{distanciaTotal}{camino : \TLista{\ent}, distancias : \TLista{\TLista{\ent}}}{\ent}{\\
+    \sum_{k=0}^{\longitud{camino}-2} distancias[camino[k]][camino[k+1]]
+    }
+    \end{proc}
 \end{enumerate}
 
 
-\subsection{Predicados y auxiliares}
-\vspace{0.3cm}
-
-% Predicado ES CIUDAD
-\pred{esCiudad}{ciudad: \TLista{\str \times \ent}}{ciudad_1 \geq 50000}
-
-% Predicado SIN REPETIDOS
-\pred{sinRepetidos}{ciudad: \TLista{\str \times \ent}}{\paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud{ciudad} \implicaLuego \neg (\existe[unalinea]{j}{\ent}{0 \leq {j}< \longitud{ciudad} \yLuego ciudad[i]_0 = ciudad[j]_0}}}
-
-% Predicado MATRIZ CUADRADA
-\pred{esMatrizCuadrada}{distancias: \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i}{\ent}{0 \leq {i}< \longitud{distancias} \implicaLuego {\mid}{distancias}{\mid} = {\mid}{distancias[i]{\mid}}}}
-
-% Predicado ES MATRIZ SIMETRICA
-\pred{esMatrizSimetrica}{distancias: \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i}{\ent}{0 \leq {i}< \longitud{distancias} \implicaLuego{{(\paraTodo[unalinea]{j}{\ent}{0 \leq {j}< \longitud{distancias} \implicaLuego {\mid}{distancias[i][j]}{\mid} = {\mid}{distancias[j][i]{\mid}}})}}}}
-
-% Predicado ESTAN DENTRO DEL RANGO
-\pred{estanDentroDelRango}{distancias: \TLista{\TLista{\ent}}, desde: \ent, hasta: \ent}{0 \leq desde < \longitud{distancias} \land 0 \leq hasta < \longitud{distancias}}
-
-% Predicado ES CAMINO
-\pred{esCamino}{distancias: \TLista{\TLista{\ent}}, camino: \TLista{\ent}, desde: {\ent}, hasta: {\ent}}{\longitud{camino} > {1} \yLuego camino[0] = desde \land camino[\longitud{camino} - 1] = hasta \land \paraTodo[unalinea]{i}{\ent}{0 \leq {i}< \longitud{camino} - 1 \yLuego 0 \leq camino[i] < \longitud{distancias}}}
-
-\vspace{0.3cm}
-
-\section{Ejemplo de sección}
-\subsection{Subsección: ambientes comunes de \LaTeX}
-
-Lo principal: las fórmulas. Se puede poner en una linea, como $x_i = x_{i-1} + x_{i-2}$, o ponerse más grande:
-
-\begin{equation}
-	\sum\limits_{i=0}^{n} i
-	\label{eq:1}
-\end{equation}
-
-Y se pueden citar ecuaciones con \verb|\eqref{nombreDeEq}|: \eqref{eq:1}
-
-Ejemplo de itemizado:
-
-\begin{itemize}
-	\item Item 1
-	\item Item 2
-	\item Item 3
-\end{itemize}
-
-Ejemplo de enumerado con menor distancia entre items:
-
-\begin{enumerate} \setlength\itemsep{0cm}
-	\item Item 1
-	\item Item 2
-	\item Item 3
-\end{enumerate}
-
-Podemos escribir mucho texto. Mucho texto. Mucho texto. Mucho texto. Mucho texto. Mucho texto. Mucho texto. Mucho texto. Mucho texto. Mucho texto. Mucho texto.
-
-Otro párrafo. Otro párrafo. Otro párrafo. Otro párrafo. Otro párrafo. Otro párrafo. Otro párrafo. Otro párrafo. Otro párrafo. Otro párrafo. Otro párrafo. Otro párrafo. Otro párrafo.
-
-\vspace{0.3cm}
-
-Le agregamos una separación entre párrafos. Le agregamos una separación entre párrafos. Le agregamos una separación entre párrafos. Le agregamos una separación entre párrafos. Le agregamos una separación entre párrafos.
-
-\vspace{0.3cm}
-
-La tabla \ref{tab:ejemplo} es un ejemplo de cómo se hace una tabla.
-
-\begin{table}[h!]
-	\centering
-	\begin{tabular}{||l c c r||} 
-		\hline
-		Col1 & Col2 & Col2 & Col3 \\ [0.5ex] 
-		\hline\hline
-		1 & 6 & 87837 & 787 \\ 
-		2 & 7 & 78 & 5415 \\
-		3 & 545 & 778 & 7507 \\
-		4 & 545 & 18744 & 7560 \\
-		5 & 88 & 788 & 6344 \\
-		\hline
-	\end{tabular}
-	\caption{Ejemplo de tabla}
-	\label{tab:ejemplo}
-\end{table}
 
 
-La figura \ref{fig:subfigs} es un ejemplo de cómo se agrega una imagen.
+\section{Demostraciones de correctitud}
 
-\begin{figure}[ht]
-	\centering
-	\includegraphics[width=0.6\textwidth]{logo_dc.jpg}
-	\caption{Ejemplo de figura}
-	\label{fig:ejemplo}
-\end{figure}
+Especificación:
 
-\begin{figure}[ht!]
-	\begin{subfigure}{0.5\textwidth}
-		\includegraphics[width=0.9\linewidth]{LaTeX-project} 
-		\caption{Logo de LaTeX}
-		\label{fig:subfig1}
-	\end{subfigure}
-	\begin{subfigure}{0.5\textwidth}
-		\includegraphics[width=0.7\linewidth]{TeX}
-		\caption{Logo de TeX}
-		\label{fig:subfig2}
-	\end{subfigure}
-	\caption{Ejemplo para poner dos figuras juntas. Y citarlas por separado a (\subref{fig:subfig1}) y (\subref{fig:subfig2}).}
-	% OJO: el caption siempre va antes del label
-	\label{fig:subfigs}
-\end{figure}
+\vspace{0.3 cm}
 
-
-
-% Para hacer que quede todo en una misma linea, se puede usar minipage
-%\begin{minipage}[t]{\textwidth}
-	\begin{lstlisting}[caption={Ejemplo de código (usando los estilos de la cátedra, ver las macros para más detalles)},label=code:for]
-res := 0;
-i := 0;
-while (i < s.size()) do
-	res := res + s[i];
-	i := i + 1
-endwhile
-	\end{lstlisting}
-%\end{minipage}
-
-Si se pone un label al \verb|lstlisting|, se puede referenciar: Código \ref{code:for}.
-
-
-\subsection{Macros de la cátedra para especificar}
-
-\begin{proc}{nombre}{\In paramIn : \nat, \Inout paramInout : \TLista{\ent}}{tipoRes}
-	%    \modifica{parametro1, parametro2,..}
-	\requiere{expresionBooleana1}
-	\asegura{expresionBooleana2}
-	\aux{auxiliar1}{parametros}{tipoRes}{expresion}
-	\pred{pred1}{parametros}{expresion} 
+\begin{proc}{poblacionTotal}{\In ciudades : \TLista{\ent}}{\ent}
+    \requiere{\existe[unalinea]{i}{\ent}{(0 \leq i < |ciudades|) \yLuego ciudades[i].habitales >       50.000)} \land \\
+    \paraTodo[unalinea]{i}{\ent}{0 \leq i < |ciudades| \implicaLuego ciudades[i].habitales \geq 0} \land \\
+    \paraTodo[unalinea]{i}{\ent}{0 \leq i < j < |ciudades| \implicaLuego ciudades[i].nombre \neq ciudades[j].nombre}
+    }
+    \asegura{ res = \sum_{i=0}^{|ciudades|-1} ciudades[i].habitantes
+    }
 \end{proc}
 
-\aux{auxiliarSuelto}{parametros}{tipoRes}{expresion}
-% \paraTodo{variable}{tipo}{expresion}
-% \existe{variable}{tipo}{expresion}
-% Pueden tener [unalinea] para que no se divida en varias lineas
-\pred{predSuelto}{parametros}{\paraTodo[unalinea]{variable}{tipo}{algo \implicaLuego expresion}}
-\pred{predSuelto}{parametros}{\existe[unalinea]{variable}{tipo}{algo \yLuego expresion}}
+\vspace{0.3 cm}
 
+Implementación:
+
+\vspace{0.3 cm}
+
+res = 0
+
+i = 0
+
+while (i < ciudades.length) do
+
+\qquad res = res + ciudades[i].habitantes
+
+\qquad i = i +1
+
+endwhile
+
+\subsection{Ejercicio 1}
+
+Para probar que el programa cumple con su especificación dad una precondición P u una postcondición Q, si siempre que el programa comienza en un estado que cumple P, el programa termina su ejecución, y en el estado final se cumple Q. Evidenciemos esto con una tripla de Hoare \{P\} S \{Q\}.
+
+\vspace{0.3 cm}
+
+Por el colorario de monotonia \{P\} S1, while..., S3 \{Q\}:
+
+\begin{enumerate} \setlength\itemsep{0cm}
+	\item $P \Longrightarrow wp(S1, Pc)$
+	\item $Pc \Longrightarrow wp(while..., Qc)$
+	\item $Qc \Longrightarrow wp(S3, Q)$
+\end{enumerate}
+
+Podemos decir que $\equiv P \Longrightarrow wp(S1; while... ; S3, Q)$ es verdadera.
+
+\vspace{0.3 cm}
+
+Sabemos que:
+
+\vspace{0.3 cm}
+
+$P \equiv (\existe[unalinea]{i}{\ent}{(0 \leq i < |ciudades|) \yLuego ciudades[i].habitales >       50.000)} \land$
+
+\qquad $\paraTodo[unalinea]{i}{\ent}{0 \leq i < |ciudades| \implicaLuego ciudades[i].habitales \geq 0} \land$
+
+\qquad $\paraTodo[unalinea]{i}{\ent}{0 \leq i < j < |ciudades| \implicaLuego ciudades[i].nombre \neq ciudades[j].nombre})$
+
+\vspace{0.3 cm}
+
+$Pc \equiv (i > 0 \land res = 0 \land P)$
+
+\vspace{0.3 cm}
+
+$Q \equiv \sum_{i=0}^{|ciudades|-1} ciudades[i].habitantes$
 
 
 \end{document}
