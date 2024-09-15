@@ -1,6 +1,10 @@
 \documentclass[10pt,a4paper]{article}
 
 \input{AEDmacros}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{algorithm}
+\usepackage{algorithmic}
 \usepackage{caratula} % Version modificada para usar las macros de algo1 de ~> https://github.com/bcardiff/dc-tex
 
 
@@ -125,74 +129,240 @@
 
 
 
+\setcounter{section}{1}
+
 \section{Demostraciones de correctitud}
 
-Especificación:
+	\begin{proc}{poblacionTotal} {\In $ciudades$:\TLista{Ciudad}}{\ent}
+		\requiere{\existe[unalinea]{i}{\ent}{(0 \leq i < |ciudades|) \yLuego ciudades[i].habitales >       50.000)} \land \\ 
+	 \paraTodo[unalinea]{i}{\ent}{0 \leq i < |ciudades| \implicaLuego ciudades[i].habitales \geq 0} \land \\
+		\paraTodo[unalinea]{i}{\ent}{0 \leq i < j < |ciudades| \implicaLuego ciudades[i].nombre \neq ciudades[j].nombre}
+	}
+		\asegura{res = \sum_{i=0}^{|ciudades|-1} ciudades[i].habitantes}
+		\end{proc}
+		
 
-\vspace{0.3 cm}
+\vspace{0.3cm}
+\subsection*{Implementaci'on del programa:}
 
-\begin{proc}{poblacionTotal}{\In ciudades : \TLista{\ent}}{\ent}
-    \requiere{\existe[unalinea]{i}{\ent}{(0 \leq i < |ciudades|) \yLuego ciudades[i].habitales >       50.000)} \land \\
-    \paraTodo[unalinea]{i}{\ent}{0 \leq i < |ciudades| \implicaLuego ciudades[i].habitales \geq 0} \land \\
-    \paraTodo[unalinea]{i}{\ent}{0 \leq i < j < |ciudades| \implicaLuego ciudades[i].nombre \neq ciudades[j].nombre}
-    }
-    \asegura{ res = \sum_{i=0}^{|ciudades|-1} ciudades[i].habitantes
-    }
-\end{proc}
 
-\vspace{0.3 cm}
+\begin{algorithmic}
+	
+	\STATE $res = 0$
+	\STATE $i=0$
+	\WHILE{i $< ciudades.length$} 
+	\STATE	$res= res + ciudades[i].habitantes$
+	\STATE $i = i + 1$
+	\ENDWHILE
+	
+	
+\end{algorithmic}
 
-Implementación:
-
-\vspace{0.3 cm}
-
-res = 0
-
-i = 0
-
-while (i < ciudades.length) do
-
-\qquad res = res + ciudades[i].habitantes
-
-\qquad i = i +1
-
-endwhile
-
+\subsection*{}
+%\textbar para repli comments
+%\textacutedbl comillas
+%\textasciibreve comillas curvas(?)
 \subsection{Ejercicio 1}
 
-Para probar que el programa cumple con su especificación dad una precondición P u una postcondición Q, si siempre que el programa comienza en un estado que cumple P, el programa termina su ejecución, y en el estado final se cumple Q. Evidenciemos esto con una tripla de Hoare \{P\} S \{Q\}.
+  Para probar que el programa cumple con su especificación dada una precondición P y una postcondición Q, si
+ siempre que el programa comienza en un estado que cumple P, el programa termina su ejecución, y en el estado 
+ final se cumple Q. Evidenciemos esto con una tripla de Hoare \{P\} S \{Q\}.
 
 \vspace{0.3 cm}
 
-Por el colorario de monotonia \{P\} S1, while..., S3 \{Q\}:
-
+\textit{Queremos ver que}
 \begin{enumerate} \setlength\itemsep{0cm}
 	\item $P \Longrightarrow wp(S1, Pc)$
-	\item $Pc \Longrightarrow wp(while..., Qc)$
+	\item $Pc \Longrightarrow wp(while B do S, Qc)$
 	\item $Qc \Longrightarrow wp(S3, Q)$
 \end{enumerate}
 
-Podemos decir que $\equiv P \Longrightarrow wp(S1; while... ; S3, Q)$ es verdadera.
+Por monotonía podemos decir que \boxed{P \Longrightarrow wp(S1; while... ; S3, Q)} es verdadera.
 
 \vspace{0.3 cm}
 
-Sabemos que:
+Elegimos los predicados necesarios
 
-\vspace{0.3 cm}
+\[P \equiv  \existe[unalinea]{i}{\ent}{(0 \leq i < |ciudades|) \yLuego ciudades[i].habitales > 50.000)}  \land \]
+	\[ \paraTodo[unalinea]{i}{\ent}{0 \leq i <|ciudades|\implicaLuego ciudades[i].habitales \geq 0} \land \] \par
 
-$P \equiv (\existe[unalinea]{i}{\ent}{(0 \leq i < |ciudades|) \yLuego ciudades[i].habitales >       50.000)} \land$
+\vspace{0.2cm}
+$S1 \equiv \{res:=0;i:=0\}$ \par
+\vspace{0.2cm}
+$Pc \equiv res:=0 \land i:=0 \land P$
+	
+\newtheorem*{demoP}{Demostración de  $P \Longrightarrow wp(S1, Pc)$}
+\newtheorem*{demoPc}{Demostración de  $P_{c} \Longrightarrow wp(while B do S, Q_{c})$}
+\begin{demoP}
 
-\qquad $\paraTodo[unalinea]{i}{\ent}{0 \leq i < |ciudades| \implicaLuego ciudades[i].habitales \geq 0} \land$
+	\[
+	wp(S1,Pc) \equiv wp(res:=0;i:=0, Pc) \overset{\scriptsize Ax. 3}{\equiv} wp(res:=0,wp(i:=0,Pc)) \overset{\scriptsize Ax. 1}{\equiv} wp(res:=0, def(i:=0) \yLuego Pc|_{i:=0}^{i}) 
+	\]
+	\[
+	\equiv wp(res:=0, 0=0 \land res:=0 \land P) \equiv wp(res:=0,true \land res:=0 \land P)\equiv wp(res:=0,res:=0 \land P)
+	\]
+	\[
+	\overset{\scriptsize Ax. 1}{\equiv} def(res:=0) \yLuego |res:=0 \land P|_{res=0}^{res} \equiv  true \yLuego 0=0 \land P \equiv P
+	\]
+	\begin{center}
+		Entonces  podemos  decir  que
+		\[P \Longrightarrow P\]	\qed
+	\end{center}
 
-\qquad $\paraTodo[unalinea]{i}{\ent}{0 \leq i < j < |ciudades| \implicaLuego ciudades[i].nombre \neq ciudades[j].nombre})$
+\end{demoP}
 
-\vspace{0.3 cm}
+\begin{demoPc}
+	\[\]\textsl{Al querer obtener esta wp no tenemos garantía del que el ciclo termine. Por eso utilizaremos el teorema de la terminación dado que contiene una función variante que decrece en cada iteracion, que nos garantiza que el ciclo terminara y usaremos el teorema del invariante para probar la correctitud del ciclo }
+	
+%%\overbrace{text} corchetes a un texto de horizontal
 
-$Pc \equiv (i > 0 \land res = 0 \land P)$
 
-\vspace{0.3 cm}
+\begin{itemize}
+	
+	\item $P_c \Rightarrow I$
+	\item $ \{I \land B \} S \{ I \}$
+	\item $I \land \neg B \Rightarrow Q_c$
+	\item $ \{I \land B \land v_{0}=f_{v} \}$ S $\{f_{v} < v_{0}\}$
+	\item $I \land f_{v} \leq 0 \Rightarrow \neg B$
+\end{itemize}
 
-$Q \equiv \sum_{i=0}^{|ciudades|-1} ciudades[i].habitantes$
+\noindent
+\textsl{Con las primeras tres nos aseguramos la corrección parcial del ciclo utilizando el teorema del invariante. Luego con 4-5 podemos probar que el ciclo termina por el teorema de la terminaci'on.}
+
+\noindent
+\textsl{Hallemos un invariante adecuado para que se cumpla antes de cada iteraci'on(1),
+después de cada iteraci'on(2) y al salir del bucle(3). Para esto necesitamos $P_c$, $B$, $Q_c$, $f_{v}$}\\
+
+\par	
+\begin{itemize}
+	
+	\item $I \equiv 0 \leq i \leq |ciudades| \land res= \sum_{j=0}^{i-1} ciudades[j].habitantes$
+	\item $P_{c} \equiv i =0 \land res=0 \land P$
+	\item $Q_{c}\equiv i=\lvert ciudades\rvert \land  res= \sum_{i=0}^{|ciudades|-1} ciudades[i].habitantes$ 
+	\item $B_{c} \equiv i < \lvert ciudades \rvert$
+	\item $f_{v} \equiv \lvert ciudades \rvert - i$
+	\nonumber
+	
+\end{itemize}
+
+\newtheorem*{demo1}{Demostración $P_{c} \Rightarrow I$}
+\newtheorem*{demo2}{Demostración $ \{I \land B \} S \{ I \}${\newline}}
+\newtheorem*{demo3}{Demostración $I \land \neg B \Rightarrow Q_c$}
+\newtheorem*{demo4}{Demostración $(I \land v_{0}=f_{v}) S (f_{v} < v_{0})${\newline}}
+\newtheorem*{demo5}{Demostración $I \land f_{v} \leq 0 \Rightarrow \neg B$}
+
+\begin{demo1}
+	\[ 
+	\equiv P \land i=0\land res=0 \Longrightarrow 0 \leq i < |ciudades| \land res=\sum_{j=0}^{i-1}ciudades[i].habitantes
+	\]
+	\[i=0 \to 0 \leq i <|ciudades| \equiv 0 \leq 0 < |ciudades| \equiv true\]
+	
+	\[res=0 \land i=0\Longrightarrow res= \sum_{j=0}^{i-1} ciudades[j].habitantes \equiv 0 = \sum_{j=0}^{-1} ciudades[j].habitantes \equiv true \]
+	\textit{entonces vale que}
+		\[P \Longrightarrow true \equiv true \]
+	\qed \\
+	
+\end{demo1}
+
+
+\begin{demo2}
+Para probar que esta tripla es cierta $\{I \land B\}S\{I\}$  es equivalente a $I \land B \to wp(S,I)$ entonces\par
+	\[
+		wp(S,I) \equiv wp(S1;S2,I) \overset{\scriptsize Ax. 3}{\equiv}wp(S1,wp(S2,I))
+	\]
+	\[ 	wp(S2,I) \overset{\scriptsize Ax. 1}{\equiv} def(i:=i+1) \yLuego I|_{i=i+1}^{i}
+	\]	
+	\[ \equiv 0\leq i+1 <|ciudades| \land res=\sum_{j=0}^{i+1-1} ciudades[j].habitantes  \equiv I' \]\par
+	
+	\[wp(S1,I') \equiv wp(res=res+ciudades[i].habitantes,I')\overset{\scriptsize Ax. 1}{\equiv} def(res) \land def(ciudades) \land 0 \leq i < |ciudades| \yLuego I'|_{res=res+ciuadades[i].h}^{res}\]
+	\[
+	\equiv 0 \leq i <|ciudades| \yLuego 0\leq i+1 \leq |ciudades|\land res+ ciudades[i].habitantes=\sum_{j=0}^{i} ciuades[j].habitantes
+	\]
+	\[\equiv 1 \leq i < |ciudades| \land res=\sum_{j=0}^{i} ciuades[j].habitantes -ciudades[i].habitantes \]
+	\[
+	\boxed{	\equiv 1 \leq i < |ciudades| \land res=\sum_{j=0}^{i-1} ciuades[j].habitantes }
+	\]
+	\textit{Ahora veamos si se cumple la implicación}
+	\[
+		 I \land B \equiv 0 \leq i \leq |ciudades| \land res= \sum_{j=0}^{i-1} ciudades[j].habitantes \land  i < \lvert ciudades \rvert 
+	\]
+
+	\[ \Longrightarrow 1 \leq i < |ciudades| \land res=\sum_{j=0}^{i-1} ciuades[j].habitantes \]
+	\[\equiv True\]
+		\qed 
+
+\end{demo2}
+\begin{demo3}
+	\[
+	\equiv 0 \leq i \leq \lvert ciudades\rvert \land  res=  \sum_{j=0}^{i-1} ciudades[j].habitantes \land i \geq |ciudades| 
+	\]
+	
+	\[\equiv i=|ciudades| \land  res=\sum_{j=0}^{i-1} ciudades[j].habitantes \overset{{\tiny i= |ciudades|}}{\equiv} i=|ciudades| \land  res=\sum_{j=0}^{|ciudades|-1} ciudades[j].habitantes
+	\]
+	\[\Longrightarrow\]
+	\[i = |ciudades| \land res=\sum_{i=0}^{|ciudades|-1} ciudades[i].habitantes
+	\]
+	\[\equiv i = |ciudades| \land res=\sum_{j=0}^{|ciudades|-1} ciudades[i].habitantes \to i = |ciudades| \land res=\sum_{i=0}^{|ciudades|-1} ciudades[i].habitantes \equiv true\]
+
+
+	
+\end{demo3}
+
+
+
+
+\begin{demo4}
+	Decimos que
+		\[
+		 (I \land B \land V_{0}=f_{v}) S (f_{v}<V_{0})\]  usamos su equivalente \[(I \land B \land V_{0}=f_{v}) \Longrightarrow wp(S,f_{v}<V_{0}) entonces\]
+		%Sabemos que
+		%\[f_{v}\leq 0, y f_{v}= |ciudades|-i\]
+		%\[\Longrightarrow |ciudades| - i \leq 0\]
+		%\[\Longrightarrow\]
+		
+		\[wp(S,f_{v}) \overset{Ax. 3}{\equiv} wp(S1,wp(s1,f_{v})) \equiv wp(res=res+ciudades[i].habitantes,wp(i:=i+1,f_{v} < V_{0})) \]
+		\[\overset{Ax. 1}{\equiv} wp(res=res+ciudades[i].habitantes,def(i+1)\yLuego |ciudades|-(i+1)<V_{0}) \]
+		\[\equiv wp(res=res+ciudades[i].habitantes,|ciudades|-(i+1)<V_{0}) \overset{Ax. 1}{\equiv} def(res=res+ciudades[i].habitantes) \yLuego\]
+		\[|ciudades| -(i+1) < V_{0} \overset{Ax. 1}{\equiv} 0 \leq i<|ciudades| \yLuego |ciudades|-(i+1)<V_{0} \]
+		
+\noindent  Sabemos que $f_{v}=V_{0}$ antes de entrar al ciclo, a lo que tratamos de probar de que al final del ciclo $f_{v} < V_{0}$, esto sea cierto , 
+lo que tratamos de decir es que como es una secuencia  cuando el ciclo termine, cuando la condición B no sea cierta obtenemos $V_{0} =|ciudades|$
+		nos queda que
+		\[0 \leq i <|ciudades| \yLuego |ciudades|-(i+1) < |ciudades| \equiv 0 \leq i <|ciudades| \yLuego -1<i \]
+		\[\equiv 0 \leq i <|ciudades| \yLuego True \equiv \boxed{0 \leq i <|ciudades|}\]
+	Nos queda ver que
+		\[I \land B \land V_{0}=f_{v} \Longrightarrow 0 \leq i <|ciudades|\]
+		\[ 0 \leq i \leq |ciudades| \land res= \sum_{j=0}^{i-1} ciudades[j].habitantes \land i < \lvert ciudades \rvert \land \lvert ciudades \rvert - i\]
+		\[\Longrightarrow  0 \leq i < |ciudades|\]
+		
+	Nos alcanza con ver 
+		\[ 0 \leq i \leq |ciudades| \Longrightarrow  0 \leq i < |ciudades|\]
+		\qed
+
+\end{demo4}
+
+
+
+
+
+\begin{demo5}
+	\[
+	0 \leq i \leq \lvert ciudades\rvert \land res= \sum_{j=0}^{i-1} ciudades[j].habitantes \land |ciudades| -i\leq 0 \Longrightarrow i \geq |ciudades|
+	\]
+	\[
+	0 \leq i \leq |ciudades| \land |ciudades| \leq i \equiv i =|ciudades| 
+	\]
+	\[i=|ciudades| \Longrightarrow i \leq |ciuaddes|\]
+	
+
+	\qed \\
+	
+\end{demo5}
+\noindent \textit{\emph{Probamos que Pc $\Longrightarrow$ wp(while B do S, Qc)
+  y como Q $\Longrightarrow$ $Q_{c}$. 
+   Y ya probado que el ciclo termina podemos decir que el programa es correcto respecto a su especificación} }
+
+\end{demoPc}
 
 
 \end{document}
