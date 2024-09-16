@@ -364,5 +364,74 @@ lo que tratamos de decir es que como es una secuencia  cuando el ciclo termine, 
 
 \end{demoPc}
 
+\setcounter{subsection}{1}
+\subsection{Ejercicio 2}
+
+\noindent\textit{Para demostrar que $res>50000$ decidimos que es necesario agregar una nueva clausula a la post condicion del programa, a su vez creemos que es importante que esta afirmación sobre res, sea cierta antes de que se ejecute el programa, mientras se ejecuta y al finalizar el programa}
+\[I_{N} \equiv 0 \leq i \leq |ciudades| \land res= \sum_{j=0}^{i-1} ciudades[j].habitantes \land (\exists k: \ent)(0 \leq k < |ciudades| \land 
+ ciudades[k].habitantes > 50000)) \]
+\[Q_{N}\equiv i=\lvert ciudades\rvert \land  res= \sum_{i=0}^{|ciudades|-1} ciudades[i].habitantes \land  res >50.000 \]
+
+
+\noindent \textit{Probaremos nuevamente la correctitud del ciclo con estas nuevos cambios }
+
+\begin{demo1}
+	\textit{Esto ya lo hemos probado, retomando nos queda que}
+	\[P \Longrightarrow P \equiv True\]
+\end{demo1}
+
+\begin{demo2}
+
+		
+		\[
+		wp(S,I) \equiv wp(S1;S2,I) \overset{\scriptsize Ax. 3}{\equiv}wp(S1,wp(S2,I))
+		\]
+		\[ 	wp(S2,I) \overset{\scriptsize Ax. 1}{\equiv} def(i:=i+1) \yLuego I|_{i=i+1}^{i}
+		\]	
+		\[ \equiv 0\leq i+1 <|ciudades| \land res=\sum_{j=0}^{i+1-1} ciudades[j].habitantes\land (\exists k: \ent)(0 \leq k < |ciudades| \land 
+		ciudades[k].habitantes > 50000))\]
+			\[ \equiv 0\leq i+1 <|ciudades| \land res=\sum_{j=0}^{i} ciudades[j].habitantes \land (\exists k: \ent)(0 \leq k < |ciudades| \land 
+			ciudades[k].habitantes > 50000))   \equiv I' \]\par
+		
+		\[wp(S1,I') \equiv wp(res=res+ciudades[i].habitantes,I')\overset{\scriptsize Ax. 1}{\equiv} def(res) \land def(ciudades) \land 0 \leq i < |ciudades| \yLuego I'|_{res=res+ciuadades[i].h}^{res}\]
+		\[
+		\equiv 0 \leq i <|ciudades| \yLuego 0\leq i+1 \leq |ciudades|\land res+ ciudades[i].habitantes=\sum_{j=0}^{i} ciuades[j].habitantes 
+		\]
+		\[\land(\exists k: \ent)(0 \leq k < |ciudades| \land ciudades[k].habitantes > 50000))\]
+		\[\equiv 1 \leq i < |ciudades| \land res=\sum_{j=0}^{i} ciuades[j].habitantes -ciudades[i].habitantes \]
+		\[\land (\exists k: \ent)(0 \leq k < |ciudades| \land ciudades[k].habitantes > 50000) \]
+		\[
+		\boxed{	\equiv 1 \leq i < |ciudades| \land res=\sum_{j=0}^{i-1} ciuades[j].habitantes \land (\exists k: \ent)(0 \leq k < |ciudades| \land ciudades[k].habitantes > 50000)}
+		\]
+		\textit{Ahora veamos si se cumple la implicación}
+		\[
+		I \land B \equiv 0 \leq i \leq |ciudades| \land res= \sum_{j=0}^{i-1} ciudades[j].habitantes \land  i < \lvert ciudades \rvert \land
+		\]
+		\[(\exists k: \ent)(0 \leq k < |ciudades| \land ciudades[k].habitantes > 50000) 
+		\]
+		\[\equiv  0 \leq i < |ciudades| \land res= \sum_{j=0}^{i-1} ciudades[j].habitantes \land  i < \lvert ciudades \rvert \land (\exists k: \ent)(0 \leq k < |ciudades| \land\]
+		\[ ciudades[k].habitantes > 50000) \]
+		\[\Longrightarrow\]
+		\[ 1 \leq i < |ciudades| \land res=\sum_{j=0}^{i-1} ciuades[j].habitantes \land (\exists k: \ent)(0 \leq k < |ciudades| \land ciudades[k].habitantes > 50000) \] 
+		\[\equiv True\]
+		\qed 
+
+\end{demo2}
+
+\begin{demo3}
+	\noindent
+		\textit{Retomando la demo con I y Qc nuevas nos queda que}
+	\[(\exists k: \ent)(0 \leq k < |ciudades| \land ciudades[k].habitantes > 50000) \Longrightarrow res>50000\]
+	\textit{Esta implicai\'on es cierta ya que sabemos que la cantidad de habitantes de una ciudad es mayor o igual cero y a la vez contiene al menos una ciudad con mayor de 50000 habitantes. }
+\end{demo3}
+
+\begin{demo4}
+ \textit{Esta demostración es análoga a la que contiene Qc e I no modificadas.}
+\end{demo4}
+
+\begin{demo5}
+	
+	\noindent \textit{Esta demostración es análoga a la que contiene Qc e I no modificadas.}
+\end{demo5}
 
 \end{document}
