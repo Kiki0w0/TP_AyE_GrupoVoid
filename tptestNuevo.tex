@@ -36,9 +36,9 @@
 	
 	\subsection{Predicados y auxiliares}
 	\vspace{0.3cm}
-	
+		
 	% Predicado ES CIUDAD
-%%	\ \	\pred{esCiudad}{ciudad: \str \times $\ent$}{$ciudad_1 \geq 50000$} 
+	\pred{esCiudad}{ciudad: {\str \times \ent}}{ciudad_1 \geq 50000}
 	
 	% Predicado SIN REPETIDOS
 	\pred{sinRepetidos}{ciudades: \TLista{\str \times \ent}}{\paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud{ciudad} \implicaLuego \neg (\existe[unalinea]{j}{\ent}{0 \leq {j}< \longitud{ciudad} \yLuego ciudad[i]_0 = ciudad[j]_0}}}
@@ -53,16 +53,12 @@
 	\pred{estanDentroDelRango}{distancias: \TLista{\TLista{\ent}}, desde: \ent, hasta: \ent}{0 \leq desde < \longitud{distancias} \land 0 \leq hasta < \longitud{distancias}}
 	
 	%diagonal en ceros
-	\pred{diagonalEnCeros}{ distancias: \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i}{\ent}{0 \leq i <|distancias| \implicaLuego diatancias[i][i]=0}}
+	\pred{diagonalEnCeros}{ distancias: \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i}{\ent}{0 \leq i <|distancias| \implicaLuego distancias[i][i]=0}}
 	
-	\pred{habitantesValidos}{c:\TLista{{\str \times \ent}}}{\paraTodo[unalinea]{i}{\ent}{0 \leq i <|c| \implicaLuego c[i] \geq 0}}
+	\pred{habitantesValidos}{c:\TLista{{\str \times \ent}}}{\paraTodo[unalinea]{i}{\ent}{0 \leq i <|c| \implicaLuego c[i]_1 \geq 0}}
 	
 	% Predicado ES CAMINO
-	\pred{esCamino}{distancias: \TLista{\TLista{\ent}}, camino: \TLista{\ent}, desde: {\ent}, hasta: {\ent}}{\longitud{camino} > {1} \yLuego camino[0] = desde \land camino[\longitud{camino} - 1] = hasta \land \paraTodo[unalinea]{i}{\ent}{0 \leq {i}< \longitud{camino} - 1 \implicaLuego 0 \leq camino[i], camino[i+1] < \longitud{distancias}} \land $hayConexion$(distancias,camino[i],camino[i+1])}
-	
-	%hayConexion
-	\pred{hayConexion}{distancias:\TLista{\TLista{\ent}}, camino:\TLista{\ent}, camino[i],camino[i+1]}{\existe[unalinea]{j,k,h}{\ent}{0 \leq j,k,h < |distancias| \land (distancias[j][k]=camino[i] \land distancia[k][h]=camino[i+1]) \lor (distancias[k][j]=camino[i] \land distancias[j][h]=camino[i+1])}}
-	
+	\pred{esCamino}{distancias: \TLista{\TLista{\ent}}, camino: \TLista{\ent}, desde: {\ent}, hasta: {\ent}}{\longitud{camino} > {1} \yLuego camino[0] = desde \land camino[\longitud{camino} - 1] = hasta \land \paraTodo[unalinea]{i}{\ent}{0 \leq {i}< \longitud{camino} - 1 \yLuego 0 \leq camino[i], camino[i+1] < \longitud{distancias}} \implicaLuego distancias[camino[i]] [camino[i+1]] > 0}
 	
 	\pred{esMatrizDeOrden1}{conexion : \TLista{\TLista{\ent}}}{
 	\paraTodo[unalinea]{i,j}{\ent}{(0 \leq i,j < \longitud{conexion} \implicaLuego conexion[i][j]= conexion[j][i] \land 
@@ -97,9 +93,9 @@
 			\requiere{sinRepetidos(menoresDeCiudades) \land sinRepetidos(mayoresDeCiudades)}
 			\requiere{habitantesValidos(menoresDeCiudades) \land habitantesValidos(mayoresDeCiudades)}
 			\requiere{\paraTodo[unalinea]{i}{\ent}{0 \leq {i} < \longitud{menoresDeCiudades} \implicaLuego \\
-					\existe[unalinea]{j}{\ent}{0 \leq {j}< \longitud{mayoresDeCiudades}  \land menoresDeCiudades[i]_0 = mayoresDeCiudades[j]_0}}}
+					\existe[unalinea]{j}{\ent}{0 \leq {j}< \longitud{mayoresDeCiudades}  \yLuego menoresDeCiudades[i]_0 = mayoresDeCiudades[j]_0}}}
 
-			\asegura{\paraTodo[unalinea]{k}{\ent}{0 \leq k < \longitud{res} \implicaLuego \existe[unalinea]{j,h}{\ent}{0 \leq j,h < \longitud{menoresDeCiudades} \land menoresDeCiudades[j]_0 = mayoresDeCiudades[h]_0 \land res[i]_1 = menoresDeCiudades[j]_1 + mayoresDeCiudades[h]_1 \land res[i]_0=mayoresDeCiudades[h]}}}
+			\asegura{\paraTodo[unalinea]{k}{\ent}{0 \leq k < \longitud{res} \implicaLuego \existe[unalinea]{j,h}{\ent}{0 \leq j,h < \longitud{menoresDeCiudades} \yLuego menoresDeCiudades[j]_0 = mayoresDeCiudades[h]_0 \land res[k]_1 = menoresDeCiudades[j]_1 + mayoresDeCiudades[h]_1 \land \\ res[k]_0 = mayoresDeCiudades[h]_0}}}
 
 			\asegura{\longitud{res} = \longitud{menoresDeCiudades} \land sinRepetidos(res)}
 			
