@@ -63,7 +63,7 @@
 	\pred{habitantesValidos}{c:\TLista{{\str \times \ent}}}{\paraTodo[unalinea]{i}{\ent}{0 \leq i <|c| \implicaLuego c[i]_1 \geq 0}}
 	
 	% Predicado ES CAMINO
-	\pred{esCamino}{distancias: \TLista{\TLista{\ent}}, camino: \TLista{\ent}, desde: {\ent}, hasta: {\ent}}{\longitud{camino} > {1} \yLuego camino[0] = desde \land camino[\longitud{camino} - 1] = hasta \land \paraTodo[unalinea]{i}{\ent}{0 \leq {i}< \longitud{camino} - 1 \yLuego 0 \leq camino[i], camino[i+1] < \longitud{distancias}} \implicaLuego distancias[camino[i]] [camino[i+1]] > 0}
+	\pred{esCamino}{distancias: \TLista{\TLista{\ent}}, camino: \TLista{\ent}, desde: {\ent}, hasta: {\ent}}{\longitud{camino} > {1} \yLuego camino[0] = desde \land camino[\longitud{camino} - 1] = hasta \land \paraTodo[unalinea]{i}{\ent}{0 \leq {i}< \longitud{camino} - 1 \implicaLuego 0 \leq camino[i], camino[i+1] < \longitud{distancias}} \yLuego distancias[camino[i]] [camino[i+1]] > 0}
 	
     \pred{esMatrizConSoloUnosYCeros}{conexion : \TLista{\TLista{\ent}}}{
 	\paraTodo[unalinea]{i}{\ent}{(0 \leq i < \longitud{conexion}) \implicaLuego 
@@ -107,7 +107,7 @@
 \end{proc}
 \vspace{0.3cm}
 \item \begin{proc}{hayCamino}{\In distancias: \TLista{\TLista{\ent}}, \In desde: \ent, \In hasta: \ent}{\bool}
-	\requiere{esMatrizCuadrada(distancias) \land esMatrizSimetrica(distancia) \land diagonalEnCero(distancias)}
+	\requiere{esMatrizCuadrada(distancias) \yLuego esMatrizSimetrica(distancia) \land diagonalEnCero(distancias)}
 	\requiere{estanDentroDelRango(distancias,desde,hasta)}
 	\requiere{distanciasValidas(distancias)}
 	\asegura{res = \True \Iff \existe[unalinea]{camino}{\TLista{\ent}}{esCamino(distancias,camino,desde,hasta)}}
@@ -117,7 +117,7 @@
 
 \item \begin{proc}{cantidadCaminosNSaltos}{\Inout conexion : \TLista{\TLista{\ent}}, \In n : \ent}{}
 		\requiere{n > 0 \land conexion = C_0}
-	\requiere{esMatrizCuadrada(conexion) \land esMatrizSimetrica(conexion) \land diagonalEnCeros(conexion)}
+	\requiere{esMatrizCuadrada(conexion) \yLuego esMatrizSimetrica(conexion) \land diagonalEnCeros(conexion)}
 	\requiere{esMatrizConSoloUnosYCeros(conexion)}
 	\asegura{
 		(\exists conexiones : \TLista{\TLista{\TLista{\ent}}}) 
