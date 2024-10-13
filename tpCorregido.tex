@@ -65,14 +65,15 @@
 	% Predicado ES CAMINO
 	\pred{esCamino}{distancias: \TLista{\TLista{\ent}}, camino: \TLista{\ent}, desde: {\ent}, hasta: {\ent}}{\longitud{camino} > {1} \yLuego camino[0] = desde \land camino[\longitud{camino} - 1] = hasta \land \paraTodo[unalinea]{i}{\ent}{0 \leq {i}< \longitud{camino} - 1 \implicaLuego 0 \leq camino[i], camino[i+1] < \longitud{distancias}} \yLuego distancias[camino[i]] [camino[i+1]] > 0}
 	
-    \pred{esMatrizConSoloUnosYCeros}{conexion : \TLista{\TLista{\ent}}}{
-	\paraTodo[unalinea]{i}{\ent}{(0 \leq i < \longitud{conexion}) \implicaLuego 
-		(\paraTodo[unalinea]{j}{\ent}{(0 \leq j < \longitud{conexion}) \implicaLuego 
-			conexion[i][j] = 0 \lor conexion[i][j] = 1)}}}
+	\pred{esMatrizConSoloUnosYCeros}{conexion : \TLista{\TLista{\ent}}}{
+		\paraTodo[unalinea]{i}{\ent}{(0 \leq i < \longitud{conexion}) \implicaLuego 
+			(\paraTodo[unalinea]{j}{\ent}{(0 \leq j < \longitud{conexion}) \implicaLuego 
+				conexion[i][j] = 0 \lor conexion[i][j] = 1)}}}
 	
 	\pred{esMultiplicacionDeMatrices}{in matrizA : \TLista{\TLista{\ent}}, in matrizB : \TLista{\TLista{\ent}}, out matrizC : \TLista{\TLista{\ent}}}{
-		\longitud{matrizA}=\longitud{matrizB} \land	\paraTodo[unalinea]{i,j}{\ent}{0 \leq i \leq j < \longitud{matrizA} \implicaLuego \longitud{matrizA[i]} =\longitud{matrizA[0]}\land
-			\longitud{matrizB[i]}=\longitud{matrizB[0]}} \yLuego
+	%	\longitud{matrizA}=\longitud{matrizB} \land	
+	\paraTodo[unalinea]{i,j}{\ent}{0 \leq i \leq j < \longitud{matrizA} \implicaLuego 
+	%		\longitud{matrizB[i]}=\longitud{matrizB[0]}} \yLuegoº
 		matrizC[i][j] = \sum_{k=0}^{\longitud{matrizA}-1} matrizA[i][k] \times matrizB[k][j])) }}
 		}
 		%	\yLuego \longitud{matrizA[i]} = \longitud{matrizA[0]}
@@ -116,16 +117,15 @@
 \vspace{0.3cm}
 
 \item \begin{proc}{cantidadCaminosNSaltos}{\Inout conexion : \TLista{\TLista{\ent}}, \In n : \ent}{}
-		\requiere{n > 0 \land conexion = C_0}
+	\requiere{n > 0 \land conexion = C_0}
 	\requiere{esMatrizCuadrada(conexion) \yLuego esMatrizSimetrica(conexion) \land diagonalEnCeros(conexion)}
 	\requiere{esMatrizConSoloUnosYCeros(conexion)}
 	\asegura{
 		(\exists conexiones : \TLista{\TLista{\TLista{\ent}}}) 
-		\paraTodo[unalinea]{i,j}{\ent}{(0 \leq i,j < \longitud{conexion}) \implicaLuego \longitud{conexiones[i]}= \longitud{C_[0]} \land \\
-		\	esMtarizCuadrada(conexiones[i] \land esMatrizSimetrica(conexiones[i]) \land
-		\	esMultiplicacionDeMatrices(conexiones[i-1], conexiones[0], conexiones[i])}  }
+		\paraTodo[unalinea]{i,j}{\ent}{(0 \leq i < \longitud{conexion}-1) \implicaLuego conexiones[0]= C_{0} \yLuego \\
+			\	esMultiplicacionDeMatrices(conexiones[i], conexiones[0], conexiones[i+1])  \land conexion=conexiones[n-1]}}
 	
-	\asegura{distanciasValidas(conexion[n-1]) \land conexion=conexiones[n-1]}
+	%\asegura{distanciasValidas(conexion[n-1])}
 	%%%%( \longitud{conexiones} = n \land conexiones[0] = C_0 \land 
 	
 \end{proc}
@@ -137,7 +137,7 @@
 	\requiere{diagonalEnCeros(distancias)}
 	\requiere{distanciasValidas(distancias)}
 	\asegura{\existe[unalinea]{camino}{\TLista{\ent}}{esCamino(distancias, camino, origen, destino) \land \\ \paraTodo[unalinea]{camino'}{\TLista{\ent}}{esCamino(camino',distancias, origen, destino) \implicaLuego distanciaTotal(camino) \leq \\
-				 distanciaTotal(camino') \land res=camino}} \lor 
+				distanciaTotal(camino') \land res=camino}} \lor 
 		\neg \existe[unalinea]{camino}{\TLista{\ent}}{esCamino(distancias, camino, origen, destino) \land res=[]}
 		%	(\exists camino : \TLista{\ent}) \ ( esCamino(distancias, camino, origen, destino) \land  
 		%	\paraTodo[unalinea]{camino'}{\TLista{\ent}}{esCamino(camino', distancias, origen, destino) \implicaLuego 
@@ -158,8 +158,8 @@
 	
 	%\begin{proc}{poblacionTotal} {\In $ciudades$:\TLista{Ciudad}}{\ent}
 	%	\requiere{\existe[unalinea]{i}{\ent}{(0 \leq i < |ciudades|) \yLuego ciudades[i].habitales >       50.000)} \land \\ 
-	%		\paraTodo[unalinea]{i}{\ent}{0 \leq i < |ciudades| \implicaLuego ciudades[i].habitales \geq 0} \land \\
-	%		\paraTodo[unalinea]{i}{\ent}{0 \leq i < j < |ciudades| \implicaLuego ciudades[i].nombre \neq ciudades[j].nombre}	}
+		%		\paraTodo[unalinea]{i}{\ent}{0 \leq i < |ciudades| \implicaLuego ciudades[i].habitales \geq 0} \land \\
+		%		\paraTodo[unalinea]{i}{\ent}{0 \leq i < j < |ciudades| \implicaLuego ciudades[i].nombre \neq ciudades[j].nombre}	}
 	%	\asegura{res = \sum_{i=0}^{|ciudades|-1} ciudades[i].habitantes}
 	%\end{proc}
 	
@@ -169,18 +169,18 @@
 	
 	
 	%\begin{algorithmic}
-		
+	
 	%	\STATE $res = 0$
 	%	\STATE $i=0$
 	%	\WHILE{i $< ciudades.length$} 
 	%	\STATE	$res= res + ciudades[i].habitantes$
 	%	\STATE $i = i + 1$
 	%	\ENDWHILE
-		
-		
+	
+	
 	%\end{algorithmic}
 	
-%	\subsection*{}
+	%	\subsection*{}
 	%\textbar para repli comments
 	%\textacutedbl comillas
 	%\textasciibreve comillas curvas(?)
@@ -206,9 +206,9 @@
 	Elegimos los predicados necesarios \par
 	\(  
 	P \equiv  \existe[unalinea]{i}{\ent}{(0 \leq i < |ciudades|) \yLuego ciudades[i].habitales > 50.000)} \land 
-	 \paraTodo[unalinea]{i}{\ent}{0 \leq i <|ciudades|\implicaLuego \) 
-	 	
-	\:\; \; \; \; \( ciudades[i].habitales \geq 0} \)\par
+	\paraTodo[unalinea]{i}{\ent}{0 \leq i <|ciudades|\implicaLuego \) 
+		
+		\:\; \; \; \; \( ciudades[i].habitales \geq 0} \)\par
 	\vspace{0.2cm}
 	$S1 \equiv \{res=0;i=0\}$ \par
 	\vspace{0.2cm}
@@ -225,7 +225,7 @@
 		\equiv wp(res=0, 0=0 \land res=0 \land P) \equiv wp(res=0,true \land res=0 \land P)\equiv wp(res=0,res=0 \land P)
 		\]
 		\[
-		\overset{\scriptsize Ax. 1}{\equiv} def(res=0) \yLuego |res=0 \land P|_{res=0}^{res} \equiv  true \yLuego 0=0 \land P \equiv P
+		\overset{\scriptsize Ax. 1}{\equiv} def(0) \yLuego res=0 \land P|_{res=0}^{res} \equiv  true \yLuego 0=0 \land P \equiv P
 		\]
 		\begin{center}
 			Entonces  podemos  decir  que
@@ -292,11 +292,11 @@
 			\[
 			wp(S,I) \equiv wp(S1;S2,I) \overset{\scriptsize Ax. 3}{\equiv}wp(S1,wp(S2,I))
 			\]
-			\[ 	wp(S2,I) \overset{\scriptsize Ax. 1}{\equiv} def(i=i+1) \yLuego I|_{i=i+1}^{i}
+			\[ 	wp(S2,I) \overset{\scriptsize Ax. 1}{\equiv} def(i+1) \yLuego I|_{i:=i+1}^{i}
 			\]	
 			\[ \equiv 0\leq i+1 \leq |ciudades| \land res=\sum_{j=0}^{i+1-1} ciudades[j].habitantes  \equiv I' \]\par
 			
-			\[wp(S1,I') \equiv wp(res=res+ciudades[i].habitantes,I')\overset{\scriptsize Ax. 1}{\equiv} def(res) \land def(ciudades) \land 0 \leq i < |ciudades| \yLuego I'|_{res=res+ciuadades[i].h}^{res}\]
+			\[wp(S1,I') \equiv wp(res=res+ciudades[i].habitantes,I')\overset{\scriptsize Ax. 1}{\equiv} def(res) \land def(ciudades[i].habitantes) \land 0 \leq i < |ciudades| \yLuego I'|_{res=res+ciuadades[i].h}^{res}\]
 			\[
 			\equiv 0 \leq i <|ciudades| \yLuego 0\leq i+1 \leq |ciudades|\land res+ ciudades[i].habitantes=\sum_{j=0}^{i} ciuades[j].habitantes
 			\]
@@ -316,15 +316,15 @@
 		\end{demo2}
 		\begin{demo3}
 			\[
-			\equiv 0 \leq i \leq \lvert ciudades\rvert \land  res=  \sum_{j=0}^{i-1} ciudades[j].habitantes \land i \geq |ciudades| 
+			I \land \neg B \equiv 0 \leq i \leq \lvert ciudades\rvert \land  res=  \sum_{j=0}^{i-1} ciudades[j].habitantes \land i \geq |ciudades| 
 			\]
 			
 			\[\equiv i=|ciudades| \land  res=\sum_{j=0}^{i-1} ciudades[j].habitantes \overset{{\tiny i= |ciudades|}}{\equiv} i=|ciudades| \land  res=\sum_{j=0}^{|ciudades|-1} ciudades[j].habitantes
 			\]
 			\[\Longrightarrow\]
-			\[i = |ciudades| \land res=\sum_{i=0}^{|ciudades|-1} ciudades[i].habitantes
+			\[ Q_{c} \equiv i = |ciudades| \land res=\sum_{i=0}^{|ciudades|-1} ciudades[i].habitantes
 			\]
-			\[\equiv i = |ciudades| \land res=\sum_{j=0}^{|ciudades|-1} ciudades[i].habitantes \to i = |ciudades| \land res=\sum_{i=0}^{|ciudades|-1} ciudades[i].habitantes \equiv true\]
+			\[\equiv i = |ciudades| \land res=\sum_{j=0}^{|ciudades|-1} ciudades[i].habitantes \Longrightarrow i = |ciudades| \land res=\sum_{i=0}^{|ciudades|-1} ciudades[i].habitantes \equiv true\]
 			
 			
 			
@@ -336,14 +336,14 @@
 		\begin{demo4}
 			Decimos que
 			\[
-			(I \land B \land v_{0}=f_{v}) S (f_{v}< v_{0})\]  usamos su equivalente \[(I \land B \land v_{0}=f_{v}) \Longrightarrow wp(S,f_{v} < v_{0}) entonces\]
+			(I \land B \land v_{0}=f_{v}) S (f_{v}< v_{0})\]  usamos su equivalente \[(I \land \neg B \land v_{0}=f_{v}) \Longrightarrow wp(S,f_{v} < v_{0}) entonces\]
 			%Sabemos que
 			%\[f_{v}\leq 0, y f_{v}= |ciudades|-i\]
 			%\[\Longrightarrow |ciudades| - i \leq 0\]
 			%\[\Longrightarrow\]
 			
-			\[wp(S,f_{v}<v_{0}) \overset{Ax. 3}{\equiv} wp(s1,wp(s2,f_{v}<v_{0})) \equiv wp(res+ciudades[i].habitantes,wp(i:=i+1,f_{v} < v_{0})) \]
-			\[\overset{Ax. 1}{\equiv} wp(res+ciudades[i].habitantes,def(i+1)\yLuego |ciudades|-(i+1) < v_{0}) \]
+			\[wp(S,f_{v}<v_{0}) \overset{Ax. 3}{\equiv} wp(s1,wp(s2,f_{v}<v_{0})) \equiv wp(res=res+ciudades[i].habitantes,wp(i:=i+1,f_{v} < v_{0})) \]
+			\[\overset{Ax. 1}{\equiv} wp(res=res+ciudades[i].habitantes,def(i+1)\yLuego |ciudades|-(i+1) < v_{0}) \]
 			\[\equiv wp(res+ciudades[i].habitantes,|ciudades|-(i+1)< v_{0}) \overset{Ax. 1}{\equiv} def(res+ciudades[i].habitantes) \yLuego\]
 			\[|ciudades| -(i+1) < v_{0} \overset{Ax. 1}{\equiv} 0 \leq i<|ciudades| \yLuego |ciudades|-(i+1)< v_{0} \]
 			
@@ -353,12 +353,12 @@
 			\[0 \leq i <|ciudades| \yLuego |ciudades|-(i+1) < |ciudades| - i \equiv 0 \leq i <|ciudades| \yLuego -1 < 0 \]
 			\[\equiv 0 \leq i <|ciudades| \yLuego True \equiv \boxed{0 \leq i <|ciudades|}\]
 			Nos queda ver que
-			\[I \land B \land V_{0}=f_{v} \Longrightarrow 0 \leq i <|ciudades|\]
+			\[I \land \neg B \land V_{0}=f_{v} \Longrightarrow 0 \leq i <|ciudades|\]
 			\[ 0 \leq i < |ciudades| \land res= \sum_{j=0}^{i-1} ciudades[j].habitantes \land i < \lvert ciudades \rvert \land \lvert ciudades \rvert - i\]
 			\[\Longrightarrow  0 \leq i < |ciudades|\]
 			
 			Nos alcanza con ver 
-			\[ 0 \leq i \leq |ciudades| \Longrightarrow  0 \leq i < |ciudades|\]
+			\[ 0 \leq i < |ciudades| \Longrightarrow  0 \leq i < |ciudades| \equiv True\]
 			\qed
 			
 		\end{demo4}
@@ -455,4 +455,5 @@
 	\end{demo5}
 	
 \end{document}
+
 
