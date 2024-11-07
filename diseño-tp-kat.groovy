@@ -16,17 +16,17 @@ Clase Ciudad {
 
 Clase Heap<T extends Comparable<T>>{
     ArrayList<T> datos
-    proc construirHeap(in elems: ArrayList<T>, in comparador: Comparador<T>): Heap<T>{
+    proc construirHeap(in elems: ArrayList<T>, in comparador: Comparador<T>): Heap<T>{ // O(n)
         // construye el heap utilizando el comparador pasado como parametro
-        // algoritmo de floyd? complejidad O(n)
-    } 
-    proc extraerMax(inout h: Heap<T>): T {
-        // extrae la raiz y luego acomoda el heap
+        // algoritmo de floyd?
+
+    proc extraerMax(inout h: Heap<T>): T { // O(log n)
+        // extrae la raiz y luego acomoda el heap 
     }
-    proc insertar(inout h: Heap<T>, in e: T){
-        // inserta un elemento y luego acomoda el heap
+    proc insertar(inout h: Heap<T>, in e: T){ // O(log n)
+        // inserta un elemento y luego acomoda el heap 
     }
-    proc reordenarHeap(ionut h: Heap<T>, in nuevoComparador : Comparador<T>){
+    proc reordenarHeap(ionut h: Heap<T>, in nuevoComparador : Comparador<T>){ // O(n) ?
         // ordena el heap segun el nuevo comparador que le pasemos
     }
 }
@@ -89,14 +89,14 @@ Class BestEffort{
     Heap<Traslado> trasladosAntiguedad // heap cuya prioridad es el traslado mas antiguo 
     Ciudad[] ciudadesInfo // array con info de ciudades cuyo indice representa la ciudad
     Heap<Ciudad> ciudadesOrden // heap de ciudades
-    int[] ciudadMayorGanancia // array que almacena ciudades con mayor ganancia
-    int[] ciudadMayorPerdida // array que almacena ciudades con mayor perdida
+    ArrayList<int> ciudadMayorGanancia // arraylist que almacena ciudades con mayor ganancia
+    ArrayList<int> ciudadMayorPerdida // arraylist que almacena ciudades con mayor perdida
     int ciudadMayorSuperavit // guarda ciudad con mayor superavit
     int gananciaTotal // contador ganancia
     int cantTraslados // contador traslados
 
 
-proc nuevoSistema(cantCiudades: N, in traslados: seq<InfoTraslado>): BestEffort {
+proc nuevoSistema(cantCiudades: N, in traslados: Traslado[]): BestEffort {
     trasladosGanancias = new construirHeap(traslados, new ComparadorGananciaNeta())
     trasladosAntiguedad = new construirHeap(traslados, new ComparadorAntiguedad())
     Ciudad[] ciudades = construirConurbano(cantCiudades)
@@ -109,14 +109,14 @@ proc nuevoSistema(cantCiudades: N, in traslados: seq<InfoTraslado>): BestEffort 
     cantTraslados = 0
 }
 
-proc registrarTraslados(inout sistema: BestEffort, in traslados: seq<InfoTraslado>) {
+proc registrarTraslados(inout sistema: BestEffort, in traslados: Traslado[]) {
     for (int i = 0, traslados.length - 1, i++) {
         sistema.trasladosGanancias.insertar(traslados[i])
         sistema.trasladosAntiguedad.insertar(traslados[i])
     }
 }
 
-proc despacharMasRedituables(inout sistema: BestEffort, in n: N): seq<N> {
+proc despacharMasRedituables(inout sistema: BestEffort, in n: int): int[] {
     m = sistema.trasladosGanancias.datos.size()
     if (n > m) {
         n = m
@@ -134,7 +134,7 @@ proc despacharMasRedituables(inout sistema: BestEffort, in n: N): seq<N> {
     ciudadMayorSuperavit = reordenarHeap(ciudadesOrden, ComparadorSuperavit)[0].id
 }
 
-proc despacharMasAntiguos(inout sistema: BestEffort, in n: N): seq<N>{
+proc despacharMasAntiguos(inout sistema: BestEffort, in n: N): int[]{
     m = sistema.trasladosAntiguedad.length
     if (n > m) {
         n = m
@@ -152,27 +152,27 @@ proc despacharMasAntiguos(inout sistema: BestEffort, in n: N): seq<N>{
     ciudadMayorSuperavit = reordenarHeap(ciudadesOrden, ComparadorSuperavit)[0].id
 }
 
-proc actualizar(inout ciudadesInfo : Ciudad[], in despacho : Traslado){
+proc actualizar(inout ciudadesInfo : Ciudad[], in despacho : Traslado){ // O(1)
     int origen = despacho.origen
     int destino = despacho.destino
     ciudadesInfo[origen].ganancia += despacho.gananciaNeta
-    ciudadesInfo[destino].perdida -= despacho.gananciaNeta
+    ciudadesInfo[destino].perdida += despacho.gananciaNeta
     
 }
 
-proc ciudadConMayorSuperavit(in sistema: BestEffort) : int{
+proc ciudadConMayorSuperavit(in sistema: BestEffort) : int{ // O(1)
     return sistema.ciudadMayorSuperavit
 }
 
-proc ciudadesMayorGanancia(in sistema: BestEffort) : int[]{
+proc ciudadesMayorGanancia(in sistema: BestEffort) : ArrayList<int>{ // O(1)
     return sistema.ciudadMayorGanancia
 }
 
-proc ciudadesConMayorPerdida(in sistema: BestEffort) : int[]{
+proc ciudadesConMayorPerdida(in sistema: BestEffort) : ArrayList<int>{ // O(1)
     return sistema.ciudadMayorPerdida
 }
 
-proc gananciaPromedioPorTraslado(in sistema: BestEffort): int{
+proc gananciaPromedioPorTraslado(in sistema: BestEffort): int{ // O(1)
     return gananciaTotal / cantTraslados
 }   
 
