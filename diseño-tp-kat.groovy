@@ -99,8 +99,7 @@ Class BestEffort{
 proc nuevoSistema(cantCiudades: N, in traslados: Traslado[]): BestEffort {
     trasladosGanancias = new construirHeap(traslados, new ComparadorGananciaNeta())
     trasladosAntiguedad = new construirHeap(traslados, new ComparadorAntiguedad())
-    Ciudad[] ciudades = construirConurbano(cantCiudades)
-    ciudadesInfo = construirHeap(ciudades, new ComparadorID())
+    Ciudad[] ciudadesInfo = construirConurbano(cantCiudades)
     ciudadesOrden = construirHeap(ciudades, new ComparadorID())
     ciudadMayorGanancia = new int[cantCiudades]
     ciudadMayorPerdida = new int[cantCiudades]
