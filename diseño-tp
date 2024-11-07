@@ -1,0 +1,50 @@
+InfoTraslado = <id: N, origen: N, destino: N, gananciaNeta: N, timestamp: N>
+
+Constructor de la clase BestEffort
+    Traslado[] trasladosGanancias
+    Traslado[] trasladosAntiguedad
+    Ciudad[] ciudadesInfo
+    Ciudad[] ciudadesOrden
+    int[] ciudadMayorGanacia
+    int[] ciudadMayorPerdida
+    int ciudadMayorSuperavit
+    int gananciaTotal
+    int cantTraslados
+
+proc nuevoSistema(cantCiudades: N, in traslados: seq<InfoTraslado>): BestEffort {
+    trasladosGanancias = construirHeap(traslados, comparadorGanancia)
+    trasladosAntiguedad = construirHeap(traslados, comparadorAntiguedad)
+    Ciudad[] ciudades = construirConurbano(cantCiudades)
+    ciudadesInfo = construirHeap(ciudades, comparadorID)
+    ciudadesOrden = construirHeap(ciudades, comparadorID)
+    ciudadMayorGanancia = []
+    ciudadMayorPerdida = []
+    ciudadMayorSuperavit = -1
+    gananciaTotal = 0
+    cantTraslados = 0
+}
+
+registrarTraslados(inout sistema: BestEffort, in traslados: seq<InfoTraslado>) {
+    for (int i = 0, traslados.length - 1, i++) {
+        BestEffort.trasladosGanancias.insertar (traslados[i], comparadorGanancia)
+        BestEffort.trasladosAntiguedad.insertar (traslados[i], comparadorAntiguedad)
+    }
+}
+
+despacharMasRedituables(inout sistema: BestEffort, in n: N): seq<N> {
+    m = BestEffort.trasladosGanancias.length
+    if (n > m) {
+        n = m
+    }
+    int[] despachos = new int[n]
+    for (int i = 0, n - 1, i++) {
+        Traslado despacho = extraerMax(BestEffort.trasladosGanancias)
+        despachos[i] = despacho.id
+        ciudadesInfo.actualizar(despacho)
+        gananciaTotal += despacho.gananciaNeta
+        cantTraslados++
+    }
+    ciudadMayorGanancia.agregarFinal(reordenarHeap(ciudadesOrden, comparadorGanancia)[0].id)
+    ciudadMayorPerdida.agregarFinal(reordenarHeap(ciudadesOrden, comparadorPerdida)[0].id)
+    ciudadMayorSuperavit = reordenarHeap(ciudadesOrden, comparadorSuperavit)[0].id
+}
