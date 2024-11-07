@@ -135,7 +135,7 @@ proc despacharMasRedituables(inout sistema: BestEffort, in n: int): int[] {
 }
 
 proc despacharMasAntiguos(inout sistema: BestEffort, in n: N): int[]{
-    m = sistema.trasladosAntiguedad.length
+    m = sistema.trasladosAntiguedad.datos.size()
     if (n > m) {
         n = m
     }
