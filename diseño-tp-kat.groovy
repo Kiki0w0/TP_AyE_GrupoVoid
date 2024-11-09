@@ -48,6 +48,21 @@ Clase Heap<T extends Comparable<T>>{
     proc eliminarEnIndice(inout h: Heap<T>, in indice: int){ // O(log n)
         // elimina un indice en especifico y ordena el heap 
     }
+
+    proc heapBajar(){
+        // implementar
+    }
+
+    proc heapSubir(){
+        // implementar
+    }
+
+    proc swap(){
+        // intercambia con padre / hijo en heapBajar y heapSubir e intercambia sus indices de posicion en el heap
+    }
+
+
+    }
 }
 
 
@@ -123,7 +138,7 @@ proc nuevoSistema(cantCiudades: N, in traslados: Traslado[]): BestEffort {
     }
     trasladosGanancias = new construirHeap(trasladosIdentificados, new ComparadorGananciaNeta())
     trasladosAntiguedad = new construirHeap(trasladosIdentificados, new ComparadorAntiguedad())
-    Ciudad[] ciudades = construirConurbano(cantCiudades)
+    Ciudad[] ciudadesInfo = construirConurbano(cantCiudades)
     ciudadesOrden = construirHeap(ciudades, new ComparadorID())
     ciudadMayorGanancia = new int[cantCiudades]
     ciudadMayorPerdida = new int[cantCiudades]
