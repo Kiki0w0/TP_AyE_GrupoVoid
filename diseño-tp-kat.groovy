@@ -1,17 +1,32 @@
 // CLASES AUXILIARES
 
 Clase Traslado{
+    int idGanancia
+    int idAntiguedad
     int id
     int origen
     int destino
     int gananciaNeta
     int timestamp
+
+    public traslado (int id, int origen, int destino, gananciaNeta, timestamp)
+        this.idGanancia = -1
+        this.idAntiguedad = -1
+        this.id = id
+        ...
 }
 
 Clase Ciudad {
     int id
     int ganancia
     int perdida 
+
+    proc Ciudad(in id: int){
+        this.id = id
+        this.ganancia = 0
+        this.perdida = 0
+    }
+        
 }
 
 Clase Heap<T extends Comparable<T>>{
@@ -28,6 +43,10 @@ Clase Heap<T extends Comparable<T>>{
     }
     proc reordenarHeap(ionut h: Heap<T>, in nuevoComparador : Comparador<T>){ // O(n) ?
         // ordena el heap segun el nuevo comparador que le pasemos
+    }
+
+    proc eliminarEnIndice(inout h: Heap<T>, in indice: int){ // O(log n)
+        // elimina un indice en especifico y ordena el heap 
     }
 }
 
@@ -84,7 +103,7 @@ Clase ComparadorSuperavit implements Comparator<Ciudad>{
 
 // CLASE BESTEFFORT
 
-Class BestEffort{
+Clase BestEffort{
     Heap<Traslado> trasladosGanancias // heap cuya prioridad es el traslado con mayor ganancia
     Heap<Traslado> trasladosAntiguedad // heap cuya prioridad es el traslado mas antiguo 
     Ciudad[] ciudadesInfo // array con info de ciudades cuyo indice representa la ciudad
@@ -97,9 +116,14 @@ Class BestEffort{
 
 
 proc nuevoSistema(cantCiudades: N, in traslados: Traslado[]): BestEffort {
-    trasladosGanancias = new construirHeap(traslados, new ComparadorGananciaNeta())
-    trasladosAntiguedad = new construirHeap(traslados, new ComparadorAntiguedad())
-    Ciudad[] ciudadesInfo = construirConurbano(cantCiudades)
+    Traslado[] trasladosIdentificados = new Traslado[|traslados|]
+    for (int i = 0, |traslados| - 1, i++) {
+        Traslado nuevoTraslado = new Traslado(traslado[i])
+        trasladosIdentificados[i] = nuevoTraslado 
+    }
+    trasladosGanancias = new construirHeap(trasladosIdentificados, new ComparadorGananciaNeta())
+    trasladosAntiguedad = new construirHeap(trasladosIdentificados, new ComparadorAntiguedad())
+    Ciudad[] ciudades = construirConurbano(cantCiudades)
     ciudadesOrden = construirHeap(ciudades, new ComparadorID())
     ciudadMayorGanancia = new int[cantCiudades]
     ciudadMayorPerdida = new int[cantCiudades]
@@ -107,7 +131,12 @@ proc nuevoSistema(cantCiudades: N, in traslados: Traslado[]): BestEffort {
     gananciaTotal = 0
     cantTraslados = 0
 }
-
+proc construirConurbano(in cantCiudades: int) : Ciudad[]{
+    res = new Ciudad[cantCiudades]
+    for (int i = 0, cantCiudades - 1, i++){
+        res[i] = new Ciudad(i)
+    }
+}
 proc registrarTraslados(inout sistema: BestEffort, in traslados: Traslado[]) {
     for (int i = 0, traslados.length - 1, i++) {
         sistema.trasladosGanancias.insertar(traslados[i])
@@ -124,7 +153,12 @@ proc despacharMasRedituables(inout sistema: BestEffort, in n: int): int[] {
     for (int i = 0, n - 1, i++) {
         Traslado despacho = extraerMax(sistema.trasladosGanancias)
         despachos[i] = despacho.id
+        int indice = despacho.idAntiguedad
         ciudadesInfo.actualizar(despacho)
+        sistema.trasladosAntiguedad[indice] = sistema.trasladosAntiguedad[|sistema.trasladosAntiguedad| - 1]
+        sistema.trasladosAntiguedad[indice].idAntiguedad = indice
+        istema.trasladosAntiguedad.eliminarUltimo()
+        istema.trasladosAntiguedad[indice].heapBajar()
         gananciaTotal += despacho.gananciaNeta
         cantTraslados++
     }
