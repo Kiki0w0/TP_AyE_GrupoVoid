@@ -1,11 +1,19 @@
 // CLASES AUXILIARES
 
 Clase Traslado{
+    int idGanancia
+    int idAntiguedad
     int id
     int origen
     int destino
     int gananciaNeta
     int timestamp
+
+    public traslado (int id, int origen, int destino, gananciaNeta, timestamp)
+        this.idGanancia = -1
+        this.idAntiguedad = -1
+        this.id = id
+        ...
 }
 
 Clase Ciudad {
@@ -97,8 +105,13 @@ Class BestEffort{
 
 
 proc nuevoSistema(cantCiudades: N, in traslados: Traslado[]): BestEffort {
-    trasladosGanancias = new construirHeap(traslados, new ComparadorGananciaNeta())
-    trasladosAntiguedad = new construirHeap(traslados, new ComparadorAntiguedad())
+    Traslado[] trasladosIdentificados = new Traslado[|traslados|]
+    for (int i = 0, |traslados| - 1, i++ {
+        Traslado nuevoTraslado = new Traslado(traslado[i])
+        trasladosIdentificados[i] = nuevoTraslado 
+    }
+    trasladosGanancias = new construirHeap(trasladosIdentificados, new ComparadorGananciaNeta())
+    trasladosAntiguedad = new construirHeap(trasladosIdentificados, new ComparadorAntiguedad())
     Ciudad[] ciudades = construirConurbano(cantCiudades)
     ciudadesInfo = construirHeap(ciudades, new ComparadorID())
     ciudadesOrden = construirHeap(ciudades, new ComparadorID())
@@ -125,7 +138,12 @@ proc despacharMasRedituables(inout sistema: BestEffort, in n: int): int[] {
     for (int i = 0, n - 1, i++) {
         Traslado despacho = extraerMax(sistema.trasladosGanancias)
         despachos[i] = despacho.id
+        int indice = despacho.idAntiguedad
         ciudadesInfo.actualizar(despacho)
+        sistema.trasladosAntiguedad[indice] = sistema.trasladosAntiguedad[|sistema.trasladosAntiguedad| - 1]
+        sistema.trasladosAntiguedad[indice].idAntiguedad = indice
+        istema.trasladosAntiguedad.eliminarUltimo()
+        istema.trasladosAntiguedad[indice].heapBajar()
         gananciaTotal += despacho.gananciaNeta
         cantTraslados++
     }
