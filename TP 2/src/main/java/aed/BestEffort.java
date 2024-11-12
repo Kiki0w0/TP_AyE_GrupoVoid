@@ -14,6 +14,10 @@ public class BestEffort {
 
 
     public BestEffort(int cantCiudades, Traslado[] traslados){
+        for (int i = 0; i < traslados.length; i++) {
+            traslados[i].setIdAntiguedad(i);
+            traslados[i].setIdGanancia(i);
+        }
         this.trasladosGanancias = new Heap(traslados, new Traslado.ComparadorGananciaNeta(),true);
         this.trasladosAntiguedad = new Heap(traslados, new Traslado.ComparadorAntiguedad(), false);
         this.ciudadesInfo = new Ciudad[cantCiudades];
