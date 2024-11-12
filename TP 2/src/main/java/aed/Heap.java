@@ -33,6 +33,7 @@ public class Heap {
         return datos.size() == 0;
     }
 
+
     public Traslado despachar() { // saca el traslado con mayor prioridad y reacomoda el heap 
         if (datos.size() == 0) {
             return null;
@@ -41,7 +42,13 @@ public class Heap {
             return datos.remove(0);
         } else {
             Traslado max = datos.get(0);
-            datos.set(0, datos.get(datos.size() - 1));
+            Traslado ultimo = datos.get(datos.size() - 1);
+            if(esHeapGanancia){
+                ultimo.setIdGanancia(0);
+            } else {
+                ultimo.setIdAntiguedad(0);
+            }
+            datos.set(0, ultimo);
             datos.remove(datos.size() - 1);
             heapifyDown(0);
             return max;
@@ -50,6 +57,11 @@ public class Heap {
     
     public void despacharEnIndice(int i) { // despacha en el indice que indiquemos y reacomoda el heap
         datos.set(i, datos.get(datos.size() - 1));
+        if (esHeapGanancia){
+            datos.get(i).setIdGanancia(i);
+        } else {
+            datos.get(i).setIdAntiguedad(i);
+        }
         datos.remove(datos.size() - 1);
     
         if (i < datos.size()) {
