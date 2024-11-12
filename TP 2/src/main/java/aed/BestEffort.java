@@ -54,10 +54,19 @@ public class BestEffort {
     }
 
     public int[] despacharMasAntiguos(int n){
-        // Implementar
-        return null;
+        int m = trasladosAntiguedad.tamaño();
+        if (n > m){
+            n = m;
+        }
+        int[] despachos = new int[n];
+        for(int i = 0; i < n; i++){
+            Traslado traslado = trasladosAntiguedad.despachar();
+            trasladosGanancias.despacharEnIndice(traslado.getIdGanancia());
+            despachos[i] = traslado.getId();
+            actualizarEstadisticas(traslado);
+        }
+        return despachos;
     }
-
     private void actualizarEstadisticas(Traslado traslado){ // actualiza contadores, info de ciudad y estadisticas de cada ciudad
         gananciaTotal += traslado.getGananciaNeta();
         cantTraslados += 1;
@@ -66,38 +75,40 @@ public class BestEffort {
         int gananciaPorTraslado = traslado.getGananciaNeta();
         ciudadesInfo[origen].setGanancia(gananciaPorTraslado); 
         ciudadesInfo[destino].setPerdida(gananciaPorTraslado);
-        actualizarEstadisticasCiudad(origen, destino);
+        actualizarEstadisticasCiudad(origen);
+        actualizarEstadisticasCiudad(destino);
     }
 
     // DUDOSA
-    private void actualizarEstadisticasCiudad(int origen, int destino){ // actualiza mayor superavit, mayor ganancia y mayor perdida
+    private void actualizarEstadisticasCiudad(int ciudad){ // actualiza mayor superavit, mayor ganancia y mayor perdida
         Ciudad.ComparadorSuperavit ComparadorSuperavit = new Ciudad.ComparadorSuperavit();
-        if (ciudadConMayorSuperavit == -1 || ComparadorSuperavit.compare(ciudadesInfo[origen], ciudadesInfo[ciudadConMayorSuperavit]) > 0) {
-            ciudadConMayorSuperavit = origen; // me parece que falta hacer lo mismo con destino *
+        if (ciudadConMayorSuperavit == -1 || ComparadorSuperavit.compare(ciudadesInfo[ciudad], ciudadesInfo[ciudadConMayorSuperavit]) > 0) {
+            ciudadConMayorSuperavit = ciudad;
         }
         if (ciudadesConMayorGanancia.size() > 0){
-            int maxGanancia = ciudadesConMayorGanancia.get(0);
-            if (ciudadesInfo[origen].getGanancia() == ciudadesInfo[maxGanancia].getGanancia()){ // *
-                ciudadesConMayorGanancia.add(origen);
-            } else if (ciudadesInfo[origen].getGanancia() > ciudadesInfo[maxGanancia].getGanancia()){
+            int maxGanancia = ciudadesInfo[ciudadesConMayorGanancia.get(0)].getGanancia();
+            if (ciudadesInfo[ciudad].getGanancia() == maxGanancia){ // *
+                ciudadesConMayorGanancia.add(ciudad);
+            } else if (ciudadesInfo[ciudad].getGanancia() > maxGanancia){
                 ciudadesConMayorGanancia.clear();
-                ciudadesConMayorGanancia.add(origen);
+                ciudadesConMayorGanancia.add(ciudad);
             }
         } else {
-            ciudadesConMayorGanancia.add(origen);
+            ciudadesConMayorGanancia.add(ciudad);
         }
         if(ciudadesConMayorPerdida.size() > 0){
-            int maxPerdida = ciudadesConMayorPerdida.get(0);
-            if(ciudadesInfo[destino].getPerdida() == ciudadesInfo[maxPerdida].getPerdida()){ // falta lo mismo pero con origen
-                ciudadesConMayorPerdida.add(destino);
-            } else if (ciudadesInfo[destino].getPerdida() > ciudadesInfo[maxPerdida].getPerdida()){
+            int maxPerdida = ciudadesInfo[ciudadesConMayorPerdida.get(0)].getPerdida();
+            if(ciudadesInfo[ciudad].getPerdida() == maxPerdida){ 
+                ciudadesConMayorPerdida.add(ciudad);
+            } else if (ciudadesInfo[ciudad].getPerdida() > maxPerdida){
                 ciudadesConMayorPerdida.clear();
-                ciudadesConMayorPerdida.add(destino);
+                ciudadesConMayorPerdida.add(ciudad);
             }
         } else {
-            ciudadesConMayorPerdida.add(destino);
+            ciudadesConMayorPerdida.add(ciudad);
         }
     }
+
 
     public int ciudadConMayorSuperavit(){
         return ciudadConMayorSuperavit;
@@ -112,8 +123,6 @@ public class BestEffort {
     }
 
     public int gananciaPromedioPorTraslado(){
-        // Implementar
-        return 0;
+        return gananciaTotal / cantTraslados;
     }
-    
 }
