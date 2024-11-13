@@ -75,40 +75,39 @@ public class BestEffort {
         int gananciaPorTraslado = traslado.getGananciaNeta();
         ciudadesInfo[origen].setGanancia(gananciaPorTraslado); 
         ciudadesInfo[destino].setPerdida(gananciaPorTraslado);
-        actualizarEstadisticasCiudad(origen);
-        actualizarEstadisticasCiudad(destino);
+        actualizarCiudadConMayorGanancia(origen);
+        actualizarCiudadConMayorPerdida(destino);
+        actualizarCiudadConMayorSuperavit(origen);
+        actualizarCiudadConMayorSuperavit(destino);
     }
 
-    // DUDOSA
-    private void actualizarEstadisticasCiudad(int ciudad){ // actualiza mayor superavit, mayor ganancia y mayor perdida
-        Ciudad.ComparadorSuperavit ComparadorSuperavit = new Ciudad.ComparadorSuperavit();
-        if (ciudadConMayorSuperavit == -1 || ComparadorSuperavit.compare(ciudadesInfo[ciudad], ciudadesInfo[ciudadConMayorSuperavit]) > 0) {
-            ciudadConMayorSuperavit = ciudad;
-        }
-        if (ciudadesConMayorGanancia.size() > 0){
-            int maxGanancia = ciudadesInfo[ciudadesConMayorGanancia.get(0)].getGanancia();
-            if (ciudadesInfo[ciudad].getGanancia() == maxGanancia){ // *
-                ciudadesConMayorGanancia.add(ciudad);
-            } else if (ciudadesInfo[ciudad].getGanancia() > maxGanancia){
-                ciudadesConMayorGanancia.clear();
-                ciudadesConMayorGanancia.add(ciudad);
-            }
-        } else {
+
+    private void actualizarCiudadConMayorGanancia(int ciudad) {
+        int gananciaCiudad = ciudadesInfo[ciudad].getGanancia();
+        if (ciudadesConMayorGanancia.size() == 0 || gananciaCiudad == ciudadesInfo[ciudadesConMayorGanancia.get(0)].getGanancia()) {
+            ciudadesConMayorGanancia.add(ciudad);
+        } else if (gananciaCiudad > ciudadesInfo[ciudadesConMayorGanancia.get(0)].getGanancia()) {
+            ciudadesConMayorGanancia.clear();
             ciudadesConMayorGanancia.add(ciudad);
         }
-        if(ciudadesConMayorPerdida.size() > 0){
-            int maxPerdida = ciudadesInfo[ciudadesConMayorPerdida.get(0)].getPerdida();
-            if(ciudadesInfo[ciudad].getPerdida() == maxPerdida){ 
-                ciudadesConMayorPerdida.add(ciudad);
-            } else if (ciudadesInfo[ciudad].getPerdida() > maxPerdida){
-                ciudadesConMayorPerdida.clear();
-                ciudadesConMayorPerdida.add(ciudad);
-            }
-        } else {
+    }
+
+    private void actualizarCiudadConMayorPerdida(int ciudad) {
+        int perdidaCiudad = ciudadesInfo[ciudad].getPerdida();
+        if (ciudadesConMayorPerdida.size() == 0 || perdidaCiudad == ciudadesInfo[ciudadesConMayorPerdida.get(0)].getPerdida()) {
+            ciudadesConMayorPerdida.add(ciudad);
+        } else if (perdidaCiudad > ciudadesInfo[ciudadesConMayorPerdida.get(0)].getPerdida()) {
+            ciudadesConMayorPerdida.clear();
             ciudadesConMayorPerdida.add(ciudad);
         }
     }
 
+    private void actualizarCiudadConMayorSuperavit(int ciudad) {
+        Ciudad.ComparadorSuperavit comparadorSuperavit = new Ciudad.ComparadorSuperavit();
+        if (ciudadConMayorSuperavit == -1 || comparadorSuperavit.compare(ciudadesInfo[ciudad], ciudadesInfo[ciudadConMayorSuperavit]) > 0) {
+            ciudadConMayorSuperavit = ciudad;
+        }
+    }
 
     public int ciudadConMayorSuperavit(){
         return ciudadConMayorSuperavit;
