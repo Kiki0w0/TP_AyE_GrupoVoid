@@ -57,14 +57,14 @@ public class Traslado {
     public static class ComparadorGananciaNeta implements Comparator<Traslado> {
         @Override
         public int compare(Traslado tras1, Traslado tras2) {
-            return Integer.compare(tras2.gananciaNeta, tras1.gananciaNeta);  
+            return Integer.compare(tras1.gananciaNeta, tras2.gananciaNeta);  
         }
     }
     
     public static class ComparadorAntiguedad implements Comparator<Traslado> {
         @Override
         public int compare(Traslado tras1, Traslado tras2) {
-            return Integer.compare(tras1.timestamp, tras2.timestamp); 
+            return Integer.compare(tras2.timestamp, tras1.timestamp); 
         }
     }
 }
