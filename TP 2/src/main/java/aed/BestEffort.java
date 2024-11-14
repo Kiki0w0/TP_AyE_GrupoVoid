@@ -9,6 +9,8 @@ public class BestEffort {
     private int ciudadConMayorSuperavit; // almacena temporalmente y se actualiza tras cada despacho *
     private ArrayList<Integer> ciudadesConMayorGanancia; // *
     private ArrayList<Integer> ciudadesConMayorPerdida; // *
+    private int cantMayorGanancia; // guarda la cantidad de la ciudad con mayor ganancia
+    private int cantMayorPerdida; // guarda la cantidad de la ciudad con mayor perdida
     private int gananciaTotal; // contador ganancia
     private int cantTraslados; // contador traslados
 
@@ -27,6 +29,8 @@ public class BestEffort {
         this.ciudadConMayorSuperavit = -1;
         this.ciudadesConMayorGanancia = new ArrayList<Integer>();
         this.ciudadesConMayorPerdida = new ArrayList<Integer>();
+        this.cantMayorGanancia = 0;
+        this.cantMayorPerdida = 0;
         this.gananciaTotal = 0;
         this.cantTraslados = 0;
     }
@@ -79,14 +83,16 @@ public class BestEffort {
         actualizarCiudadConMayorPerdida(destino);
         actualizarCiudadConMayorSuperavit(origen);
         actualizarCiudadConMayorSuperavit(destino);
+        cantMayorGanancia = ciudadesInfo[ciudadesConMayorGanancia.get(0)].getGanancia();
+        cantMayorPerdida = ciudadesInfo[ciudadesConMayorPerdida.get(0)].getPerdida();
     }
 
 
     private void actualizarCiudadConMayorGanancia(int ciudad) {
         int gananciaCiudad = ciudadesInfo[ciudad].getGanancia();
-        if (ciudadesConMayorGanancia.size() == 0 || gananciaCiudad == ciudadesInfo[ciudadesConMayorGanancia.get(0)].getGanancia()) {
+        if (ciudadesConMayorGanancia.size() == 0 || (gananciaCiudad == ciudadesInfo[ciudadesConMayorGanancia.get(0)].getGanancia() && gananciaCiudad == cantMayorGanancia)) {
             ciudadesConMayorGanancia.add(ciudad);
-        } else if (gananciaCiudad > ciudadesInfo[ciudadesConMayorGanancia.get(0)].getGanancia()) {
+        } else if (gananciaCiudad >= ciudadesInfo[ciudadesConMayorGanancia.get(0)].getGanancia() && gananciaCiudad != cantMayorGanancia) {
             ciudadesConMayorGanancia.clear();
             ciudadesConMayorGanancia.add(ciudad);
         }
@@ -94,9 +100,9 @@ public class BestEffort {
 
     private void actualizarCiudadConMayorPerdida(int ciudad) {
         int perdidaCiudad = ciudadesInfo[ciudad].getPerdida();
-        if (ciudadesConMayorPerdida.size() == 0 || perdidaCiudad == ciudadesInfo[ciudadesConMayorPerdida.get(0)].getPerdida()) {
+        if (ciudadesConMayorPerdida.size() == 0 || (perdidaCiudad == ciudadesInfo[ciudadesConMayorPerdida.get(0)].getPerdida() && perdidaCiudad == cantMayorPerdida)) {
             ciudadesConMayorPerdida.add(ciudad);
-        } else if (perdidaCiudad > ciudadesInfo[ciudadesConMayorPerdida.get(0)].getPerdida()) {
+        } else if (perdidaCiudad >= ciudadesInfo[ciudadesConMayorPerdida.get(0)].getPerdida() && perdidaCiudad != cantMayorPerdida) {
             ciudadesConMayorPerdida.clear();
             ciudadesConMayorPerdida.add(ciudad);
         }
