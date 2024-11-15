@@ -88,7 +88,7 @@ public class BestEffort {
     }
 
 
-    private void actualizarCiudadConMayorGanancia(int ciudad) {
+    private void actualizarCiudadConMayorGanancia(int ciudad) { // O(1)
         int gananciaCiudad = ciudadesInfo[ciudad].getGanancia();
         if (ciudadesConMayorGanancia.size() == 0 || (gananciaCiudad == ciudadesInfo[ciudadesConMayorGanancia.get(0)].getGanancia() && gananciaCiudad == cantMayorGanancia)) {
             ciudadesConMayorGanancia.add(ciudad);
@@ -98,7 +98,7 @@ public class BestEffort {
         }
     }
 
-    private void actualizarCiudadConMayorPerdida(int ciudad) {
+    private void actualizarCiudadConMayorPerdida(int ciudad) { // O(1)
         int perdidaCiudad = ciudadesInfo[ciudad].getPerdida();
         if (ciudadesConMayorPerdida.size() == 0 || (perdidaCiudad == ciudadesInfo[ciudadesConMayorPerdida.get(0)].getPerdida() && perdidaCiudad == cantMayorPerdida)) {
             ciudadesConMayorPerdida.add(ciudad);
@@ -108,7 +108,7 @@ public class BestEffort {
         }
     }
 
-    private void actualizarCiudadConMayorSuperavit(int ciudad) {
+    private void actualizarCiudadConMayorSuperavit(int ciudad) { // O(1)
         Ciudad.ComparadorSuperavit comparadorSuperavit = new Ciudad.ComparadorSuperavit();
         if (ciudadConMayorSuperavit == -1 || comparadorSuperavit.compare(ciudadesInfo[ciudad], ciudadesInfo[ciudadConMayorSuperavit]) > 0) {
             ciudadConMayorSuperavit = ciudad;
