@@ -38,7 +38,7 @@ public class Ciudad {
             if (superavit1 != superavit2){
                 return Integer.compare(superavit1,superavit2);
             } else {
-                return Integer.compare(ciud1.id, ciud2.id);
+                return Integer.compare(ciud2.id, ciud1.id);
             }
         }
     }
