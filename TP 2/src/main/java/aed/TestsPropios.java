@@ -60,10 +60,8 @@ public class TestsPropios {
         assertEquals(8, despachos_ant.length);
         assertEquals(8, despachos_red.length);
     }
-// caso, todos los despachos son iguales los n mas redituables son la long del arreglo, tienen la misma ganancia
-// caso, el despacho con mayor perdida
-// caso despachar hasta que este todo vacio;
 
+// caso despachar hasta que este todo vacio;
     @Test 
     public void despacharTodos(){
         int cantCiudades=7;
@@ -79,20 +77,28 @@ public class TestsPropios {
         BestEffort sistema= new BestEffort(cantCiudades,traslados);
         sistema.registrarTraslados(traslados);
         for(int i=0;i<traslados.length;i++){
-            sistema.despacharMasAntiguos();
-            sistema.despacharMasRedituables();
+            sistema.ciudadesConMayorGanancia();
+            sistema.ciudadesConMayorPerdida();
         }
-        assertTrue(sistema.trasladosGanancias.estaVacio());
-        assertTrue(sistema.trasladosAntiguedad.estaVacio());
+        assertTrue(sistema.tamaño,0)
 
     }
 
     @Test 
+// agrego mas traslados y los despacho menos del mayor perdida(contenido en los nuevps traslados)
     public void esDeMayorPerdida(){
+        int cantCiudades=4;
+        Traslado[] traslados= {
+            new Traslado(1, 0, 1, 300, 15),
+            new Traslado(2, 1, 2, 200, 15),
+            new Traslado(3, 2, 3, 100, 15),
+        };
         
-    }
+        BestEffort sistema= new BestEffort(cantCiudades,traslados);
+        sistema.registrarTraslados(traslados);
+               
 
-}
-//
+    }
+// caso, todos los despachos son iguales los n mas redituables son la long del arreglo, tienen la misma ganancia
 
 }
