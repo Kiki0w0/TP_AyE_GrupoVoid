@@ -15,7 +15,7 @@ public class BestEffort {
     private int cantTraslados; // Contador traslados despachados
 
 
-    public BestEffort(int cantCiudades, Traslado[] traslados){ // O(|C| + |T|). Construir el array infoCiudades es |C| y construir los heaps es |T| 
+    public BestEffort(int cantCiudades, Traslado[] traslados){ // Complejidad: O(|C| + |T|). Construir el array infoCiudades es |C| y construir los heaps es |T| 
         this.trasladosGanancias = new Heap(traslados, new Traslado.ComparadorGananciaNeta(),true);
         this.trasladosAntiguedad = new Heap(traslados, new Traslado.ComparadorAntiguedad(), false);
         this.ciudadesInfo = new Ciudad[cantCiudades];
@@ -31,7 +31,7 @@ public class BestEffort {
         this.cantTraslados = 0;
     }
 
-    public void registrarTraslados(Traslado[] traslados){ // Complejidad: O(|traslados| log(|T|)) Insertar en el heap es log(|T|) y lo hacemos |traslados| veces
+    public void registrarTraslados(Traslado[] traslados){ // Complejidad: O(|traslados| log(|T|)) Insertar en el heap es log(|T|) y lo hacemos |traslados| veces.
         for(int i = 0; i < traslados.length; i++){
             trasladosGanancias.insertar(traslados[i]);
             trasladosAntiguedad.insertar(traslados[i]);
@@ -67,7 +67,7 @@ public class BestEffort {
         }
         return despachos;
     }
-    private void actualizarEstadisticas(Traslado traslado){ // Complejidad: O(1). Actualiza contadores, la info de las ciudades comprometidas y estadisticas de las ciudades
+    private void actualizarEstadisticas(Traslado traslado){ // O(1) Actualiza contadores, la info de las ciudades comprometidas y estadisticas de las ciudades con operaciones elementales.
         int gananciaPorTraslado = traslado.getGananciaNeta();
         gananciaTotal += gananciaPorTraslado;
         cantTraslados += 1;
@@ -84,7 +84,7 @@ public class BestEffort {
     }
 
 
-    private void actualizarCiudadConMayorGanancia(int ciudad) { // O(1)
+    private void actualizarCiudadConMayorGanancia(int ciudad) { // O(1) utiliza solo operaciones elementales y las operaciones de arrayList son consideradas O(1).
         int gananciaCiudad = ciudadesInfo[ciudad].getGanancia();
         if (ciudadesConMayorGanancia.size() == 0 || (gananciaCiudad == ciudadesInfo[ciudadesConMayorGanancia.get(0)].getGanancia() && gananciaCiudad == cantMayorGanancia)) {
             ciudadesConMayorGanancia.add(ciudad);
@@ -94,7 +94,7 @@ public class BestEffort {
         }
     }
 
-    private void actualizarCiudadConMayorPerdida(int ciudad) { // O(1)
+    private void actualizarCiudadConMayorPerdida(int ciudad) { // O(1) utiliza solo operaciones elementales y las operaciones de arrayList son consideradas O(1).
         int perdidaCiudad = ciudadesInfo[ciudad].getPerdida();
         if (ciudadesConMayorPerdida.size() == 0 || (perdidaCiudad == ciudadesInfo[ciudadesConMayorPerdida.get(0)].getPerdida() && perdidaCiudad == cantMayorPerdida)) {
             ciudadesConMayorPerdida.add(ciudad);
@@ -104,26 +104,26 @@ public class BestEffort {
         }
     }
 
-    private void actualizarCiudadConMayorSuperavit(int ciudad) { // O(1)
+    private void actualizarCiudadConMayorSuperavit(int ciudad) { // O(1) utiliza solo operaciones elementales y las operaciones de arrayList son consideradas O(1).
         Ciudad.ComparadorSuperavit comparadorSuperavit = new Ciudad.ComparadorSuperavit();
         if (ciudadConMayorSuperavit == -1 || comparadorSuperavit.compare(ciudadesInfo[ciudad], ciudadesInfo[ciudadConMayorSuperavit]) > 0) {
             ciudadConMayorSuperavit = ciudad;
         }
     }
 
-    public int ciudadConMayorSuperavit(){ // O(1) devuelve un atributo de la clase BestEffort.
+    public int ciudadConMayorSuperavit(){ // Complejidad: O(1) pues solo devuelve un atributo de la clase BestEffort.
         return ciudadConMayorSuperavit;
     }
 
-    public ArrayList<Integer> ciudadesConMayorGanancia(){ // O(1) devuelve un atributo de la clase BestEffort.
+    public ArrayList<Integer> ciudadesConMayorGanancia(){ // Complejidad: O(1) pues solo devuelve un atributo de la clase BestEffort.
         return ciudadesConMayorGanancia;
     }
 
-    public ArrayList<Integer> ciudadesConMayorPerdida(){ // O(1) devuelve un atributo de la clase BestEffort.
+    public ArrayList<Integer> ciudadesConMayorPerdida(){ // Complejidad: O(1) pues solo devuelve un atributo de la clase BestEffort.
         return ciudadesConMayorPerdida;
     }
 
-    public int gananciaPromedioPorTraslado(){ // O(1) devuelve un atributo de la clase BestEffort.
+    public int gananciaPromedioPorTraslado(){ // Complejidad: O(1) pues solo devuelve un atributo de la clase BestEffort.
         return gananciaTotal / cantTraslados;
     }
 }
