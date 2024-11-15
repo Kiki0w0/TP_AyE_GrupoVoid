@@ -13,6 +13,11 @@ public class Heap {
         this.datos = new ArrayList<>();
         for(int i = 0; i < datos.length; i++){
             this.datos.add(datos[i]);
+            if(esHeapGanancia){
+                datos[i].setIdGanancia(i);
+            } else {
+                datos[i].setIdAntiguedad(i);
+            }
         }
         this.comparador = comparador;
         this.esHeapGanancia = esHeapGanancia;
