@@ -3,20 +3,20 @@ package aed;
 import java.util.ArrayList;
 
 public class BestEffort {
-    private Heap trasladosGanancias; // heap ordenado por ganancia
-    private Heap trasladosAntiguedad; // heap ordenado por antiguedad
-    private Ciudad[] ciudadesInfo; // guarda la informacion de las ciudades 
-    private int ciudadConMayorSuperavit; // almacena temporalmente y se actualiza tras cada despacho *
-    private ArrayList<Integer> ciudadesConMayorGanancia; // *
-    private ArrayList<Integer> ciudadesConMayorPerdida; // *
-    private int cantMayorGanancia; // guarda la cantidad de la ciudad con mayor ganancia
-    private int cantMayorPerdida; // guarda la cantidad de la ciudad con mayor perdida
-    private int gananciaTotal; // contador ganancia
-    private int cantTraslados; // contador traslados
+    private Heap trasladosGanancias; // Max-heap ordenado por ganancia
+    private Heap trasladosAntiguedad; // Min-heap ordenado por antiguedad
+    private Ciudad[] ciudadesInfo; // Guarda la informacion de las ciudades 
+    private int ciudadConMayorSuperavit; // Almacena temporalmente las estadisticas de superavit y se actualiza tras cada despacho 
+    private ArrayList<Integer> ciudadesConMayorGanancia; // Almacena temporalmente las estadisticas de ganancia y se actualiza tras cada despacho 
+    private ArrayList<Integer> ciudadesConMayorPerdida; // Almacena temporalmente las estadisticas de perdida y se actualiza tras cada despacho 
+    private int cantMayorGanancia; // Guarda la cantidad de la ciudad con mayor ganancia
+    private int cantMayorPerdida; // Guarda la cantidad de la ciudad con mayor perdida
+    private int gananciaTotal; // Contador ganancia
+    private int cantTraslados; // Contador traslados despachados
 
 
     public BestEffort(int cantCiudades, Traslado[] traslados){
-        for (int i = 0; i < traslados.length; i++) {
+        for (int i = 0; i < traslados.length; i++) { // Asigna el handle inicial en los heaps correspondientes
             traslados[i].setIdAntiguedad(i);
             traslados[i].setIdGanancia(i);
         }
@@ -35,29 +35,29 @@ public class BestEffort {
         this.cantTraslados = 0;
     }
 
-    public void registrarTraslados(Traslado[] traslados){
+    public void registrarTraslados(Traslado[] traslados){ // Complejidad: O(|traslados| log(|T|)) Insertar en el heap es log(|T|) y lo hacemos |traslados| veces
         for(int i = 0; i < traslados.length; i++){
             trasladosGanancias.insertar(traslados[i]);
             trasladosAntiguedad.insertar(traslados[i]);
         }
     }
 
-    public int[] despacharMasRedituables(int n){
+    public int[] despacharMasRedituables(int n){ // Complejidad: O(n log(|T|) Despachar del heap es log(|T|) y lo hacemos n veces. Actualizar las estadisticas es O(1).
         int m = trasladosGanancias.tamaño();
         if (n > m){
             n = m;
         }
         int[] despachos = new int[n];
         for(int i = 0; i < n; i++){
-            Traslado traslado = trasladosGanancias.despachar(); // despacha del heap y devuelve un traslado
-            trasladosAntiguedad.despacharEnIndice(traslado.getIdAntiguedad()); // despacha en trasladosAntiguedad con la referencia correspondiente
+            Traslado traslado = trasladosGanancias.despachar(); 
+            trasladosAntiguedad.despacharEnIndice(traslado.getIdAntiguedad()); // Despacha en trasladosAntiguedad con el handle correspondiente
             despachos[i] = traslado.getId();
             actualizarEstadisticas(traslado);
         }
         return despachos;
     }
 
-    public int[] despacharMasAntiguos(int n){
+    public int[] despacharMasAntiguos(int n){ // Complejidad: O(n log(|T|) Despachar del heap es log(|T|) y eso lo hacemos n veces. Actualizar las estadisticas es O(1).
         int m = trasladosAntiguedad.tamaño();
         if (n > m){
             n = m;
@@ -71,12 +71,12 @@ public class BestEffort {
         }
         return despachos;
     }
-    private void actualizarEstadisticas(Traslado traslado){ // actualiza contadores, info de ciudad y estadisticas de cada ciudad
-        gananciaTotal += traslado.getGananciaNeta();
+    private void actualizarEstadisticas(Traslado traslado){ // Complejidad: O(1). Actualiza contadores, la info de las ciudades comprometidas y estadisticas de las ciudades
+        int gananciaPorTraslado = traslado.getGananciaNeta();
+        gananciaTotal += gananciaPorTraslado;
         cantTraslados += 1;
         int origen = traslado.getOrigen();
         int destino = traslado.getDestino();
-        int gananciaPorTraslado = traslado.getGananciaNeta();
         ciudadesInfo[origen].setGanancia(gananciaPorTraslado); 
         ciudadesInfo[destino].setPerdida(gananciaPorTraslado);
         actualizarCiudadConMayorGanancia(origen);
@@ -115,19 +115,19 @@ public class BestEffort {
         }
     }
 
-    public int ciudadConMayorSuperavit(){
+    public int ciudadConMayorSuperavit(){ // O(1) devuelve un atributo de la clase BestEffort
         return ciudadConMayorSuperavit;
     }
 
-    public ArrayList<Integer> ciudadesConMayorGanancia(){
+    public ArrayList<Integer> ciudadesConMayorGanancia(){ // O(1) devuelve un atributo de la clase BestEffort
         return ciudadesConMayorGanancia;
     }
 
-    public ArrayList<Integer> ciudadesConMayorPerdida(){
+    public ArrayList<Integer> ciudadesConMayorPerdida(){ // O(1) devuelve un atributo de la clase BestEffort
         return ciudadesConMayorPerdida;
     }
 
-    public int gananciaPromedioPorTraslado(){
+    public int gananciaPromedioPorTraslado(){ // O(1) devuelve un atributo de la clase BestEffort
         return gananciaTotal / cantTraslados;
     }
 }
