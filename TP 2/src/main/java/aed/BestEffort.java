@@ -53,7 +53,7 @@ public class BestEffort {
         return despachos;
     }
 
-    public int[] despacharMasAntiguos(int n){ // Complejidad: O(n log(|T|) Despachar del heap es log(|T|) y eso lo hacemos n veces. Actualizar las estadisticas es O(1) pues unicamente realiza operaciones elementales.
+    public int[] despacharMasAntiguos(int n){ // Complejidad: O(n log(|T|) Despachar del heap es log(|T|) y eso lo hacemos n veces. ActualizarEstadisticas es O(1) pues unicamente realiza operaciones elementales.
         int m = trasladosAntiguedad.tamaño();
         if (n > m){
             n = m;
