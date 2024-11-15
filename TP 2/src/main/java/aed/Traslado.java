@@ -4,8 +4,8 @@ import java.util.Comparator;
 
 public class Traslado { 
     private int id;
-    private int idGanancia; // referencia de indice en el heap de ganancia
-    private int idAntiguedad; // referencia de indice en el heap de antiguedad
+    private int idGanancia; // handle para referenciar su posicion en el heap de ganancia
+    private int idAntiguedad; // handle para referenciar su posicion en el heap de antiguedad
     private int origen;
     private int destino;
     private int gananciaNeta;
