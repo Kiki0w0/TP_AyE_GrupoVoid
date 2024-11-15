@@ -15,7 +15,7 @@ public class BestEffort {
     private int cantTraslados; // Contador traslados despachados
 
 
-    public BestEffort(int cantCiudades, Traslado[] traslados){
+    public BestEffort(int cantCiudades, Traslado[] traslados){ // O(|C| + |T|). Construir el array infoCiudades es |C| y construir los heaps es |T| 
         for (int i = 0; i < traslados.length; i++) { // Asigna el handle inicial en los heaps correspondientes
             traslados[i].setIdAntiguedad(i);
             traslados[i].setIdGanancia(i);
