@@ -1,6 +1,7 @@
 package aed;
 
-public class Handle {
+// Utilizaremos esta clase para referenciar los indices de elementos que pertenecen a mas de un heap
+public class Handle { 
     private int indice;
 
     public Handle(int indice) {
