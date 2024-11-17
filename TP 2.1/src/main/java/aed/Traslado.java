@@ -75,6 +75,14 @@ public class Traslado {
             return Integer.compare(tras2.timestamp, tras1.timestamp); 
         }
     }
+
+// Comparador para usar en el test case despacharIndiceAntiguedad del archivo HeapTest
+    public static class ComparadorAntiguedadInvertido implements Comparator<Traslado> {
+        @Override
+        public int compare(Traslado tras1, Traslado tras2) {
+            return Integer.compare(tras1.timestamp, tras2.timestamp);
+        }
+    }
 }
 
 
