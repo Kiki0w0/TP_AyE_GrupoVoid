@@ -120,5 +120,10 @@ public class Heap<T> {
     public int hijoDer(int indice) { // O(1)
         return 2 * indice + 2;
     }
+    
+// Agregado para el archivo test HeapTest
+    public boolean estaVacio() {
+        return datos.isEmpty();
+    }
 
 }
