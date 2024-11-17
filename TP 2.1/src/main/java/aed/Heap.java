@@ -57,7 +57,7 @@ public class Heap<T> {
     
     public void actualizarEnIndice(int i) { // O(log(N)) Reacomoda el heap cuando alguno de sus valores Cambia
         if (i < datos.size()) {
-            int padre = (i - 1) / 2;
+            int padre = padre(i);
             if (comparador.compare(datos.get(i).getValor(), datos.get(padre).getValor()) > 0) {
                 heapifyUp(i);
             } else {
