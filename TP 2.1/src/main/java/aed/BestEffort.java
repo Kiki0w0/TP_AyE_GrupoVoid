@@ -156,6 +156,9 @@ public class BestEffort {
             ciudadesConMayorPerdida.add(ciudad);
         }
     }
-
+// Método para que el test despacharTodos pueda acceder a despachados
+    public int getDespachados() {
+        return despachados;
+    }
 
 }
