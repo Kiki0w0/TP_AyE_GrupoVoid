@@ -26,7 +26,7 @@ public class BestEffort {
 
         // Procesa cada traslado para asignarle identificadores unicos y los añade a las listas correspondientes
         // Todas las operaciones realizadas en cada iteracion son O(1)
-        for (int i = 0; i < traslados.length; i++) { // O(T)
+        for (int i = 0; i < traslados.length; i++) { // O(|T|)
             Traslado traslado = traslados[i];
             traslado.setIdGanancia(i);
             traslado.setIdAntiguedad(i);
@@ -57,7 +57,7 @@ public class BestEffort {
         this.despachados = 0;
     }
 
-    public void registrarTraslados(Traslado[] traslados){ // O(|traslados| log(|T|)
+    public void registrarTraslados(Traslado[] traslados){ // O(|traslados| log(|T|))
         for(int i = 0; i < traslados.length; i++){ // O(|traslados|)
             Traslado traslado = traslados[i];
             heapRedituables.insertar(new HeapElement<Traslado>(traslado.getHandleGanancia(), traslado)); // O(log T)
@@ -65,7 +65,7 @@ public class BestEffort {
         }
     }
 
-    // Extrae n veces un elemento de ambos heaps de traslado, actualiza las estadisticas y reacomoda heapSuperavit
+    // Extrae n veces un elemento de ambos heaps de traslado, actualiza las estadisticas y reacomoda todos los heap
     public int[] despacharMasRedituables(int n){ // O(n (log(T) + log(C)))
         int m = heapRedituables.tamaño(); 
         if (n > m){ 
@@ -76,7 +76,7 @@ public class BestEffort {
             HeapElement<Traslado> despacho = heapRedituables.extraerMax(); // O(log(|T|)) 
             heapAntiguedad.eliminar(despacho.getValor().getIdAntiguedad()); // O(log(|T|))
             despachos[i] = despacho.getValor().getId(); 
-            actualizarEstadisticas(despacho); // O(log (|C|)
+            actualizarEstadisticas(despacho); // O(log (|C|))
         }
         return despachos; 
     }
@@ -118,7 +118,7 @@ public class BestEffort {
 
     // FUNCIONES AUXILIARES
 
-    private void actualizarEstadisticas(HeapElement<Traslado> despacho){ // O(log(|C|) 
+    private void actualizarEstadisticas(HeapElement<Traslado> despacho){ // O(log(|C|))
         Ciudad origen = ciudadesInfo[despacho.getValor().getOrigen()]; 
         Ciudad destino = ciudadesInfo[despacho.getValor().getDestino()]; 
         int gananciaPorTraslado = despacho.getValor().getGananciaNeta(); 
@@ -129,8 +129,8 @@ public class BestEffort {
         origen.setGanancia(gananciaPorTraslado); 
         destino.setPerdida(gananciaPorTraslado); 
         // Actualizamos las estadisticas de ciudades
-        actualizarCiudadConMayorGanancia(origen.getId());
-        actualizarCiudadConMayorPerdida(destino.getId());
+        actualizarCiudadConMayorGanancia(origen.getId()); // O(1)
+        actualizarCiudadConMayorPerdida(destino.getId()); // O(1)
         heapSuperavit.actualizarEnIndice(origen.getIdSuperavit()); // O(log(|C|)) reacomoda heapSuperavit
         heapSuperavit.actualizarEnIndice(destino.getIdSuperavit()); // O(log (|C|)) reacomoda heapSuperavit
         maxGanancia = ciudadesInfo[ciudadesConMayorGanancia.get(0)].getGanancia(); 
