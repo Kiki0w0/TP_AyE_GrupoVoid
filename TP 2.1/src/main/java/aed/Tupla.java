@@ -1,27 +1,23 @@
 package aed;
 
-public class Tupla<T> { 
-    private Handle handle;
-    private T objeto;
+public class HeapElement<T> {  // Define un elemento que puede pertenecer a mas de un heap 
+    private Handle handle; // Referencia su ubicacion en cada heap
+    private T valor; // Guarda el valor del elemento
 
-    public Tupla(Handle handle, T objeto){
+    public HeapElement(Handle handle, T valor){
         this.handle = handle;
-        this.objeto = objeto;
+        this.valor = valor;
     }
 
     public Handle getHandle(){
         return handle;
     }
 
-    public T getObjeto(){
-        return objeto;
+    public T getValor(){
+        return valor;
     }
 
     public void setHandle(int indice){
         this.handle.setIndice(indice);;
-    }
-    
-    public void setObjeto(T objeto){
-        this.objeto = objeto;
     }
 }
