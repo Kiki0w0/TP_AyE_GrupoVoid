@@ -3,138 +3,159 @@ package aed;
 import java.util.ArrayList;
 
 public class BestEffort {
-    private Heap<Traslado> trasladosGanancias; // heap de traslados ordenados por ganancia
-    private Heap<Traslado> trasladosAntiguedad; // heap de traslados ordenados por antiguedad
-    private Ciudad[] ciudadesInfo; // guarda la informacion de las ciudades 
-    private Heap<Ciudad> ciudadesSuperavit; // heap de ciudades ordenados por superavit
-    private ArrayList<Integer> ciudadesConMayorGanancia; // *
-    private ArrayList<Integer> ciudadesConMayorPerdida; // *
-    private int cantMayorGanancia; // guarda la cantidad de la ciudad con mayor ganancia para ser comparada con la ciudad ingresada
-    private int cantMayorPerdida; // guarda la cantidad de la ciudad con mayor perdida para ser comparada con la ciudad ingresada
-    private int gananciaTotal; // contador ganancia
-    private int cantTraslados; // contador traslados
+    private Heap<Traslado> heapRedituables; // Heap de traslados ordenados por ganancia
+    private Heap<Traslado> heapAntiguedad; // Heap de traslados ordenados por antiguedad
+    private Ciudad[] ciudadesInfo; // Guarda la informacion de las ciudades 
+    private Heap<Ciudad> heapSuperavit; // Heap de ciudades ordenados por superavit
+    private ArrayList<Integer> ciudadesConMayorGanancia; // Lista de ciudades con mayor ganancia
+    private ArrayList<Integer> ciudadesConMayorPerdida; // Lista de ciudades con mayor perdida
+    private int maxGanancia; // Guarda la mayor ganancia de una ciudad
+    private int maxPerdida; // Guarda la mayor perdida de una ciudad
+    private int gananciaTotal; // Contador ganancia por traslados despachados
+    private int despachados; // Contador de traslados despachados
 
 
-    public BestEffort(int cantCiudades, Traslado[] traslados){
-        ArrayList<Tupla<Traslado>> listaTrasladosGanancia = new ArrayList<>();
-        ArrayList<Tupla<Traslado>> listaTrasladosAntiguedad = new ArrayList<>();
-        for (int i = 0; i < traslados.length; i++) {
+    // Sea T = Conjunto de traslados
+    // Sea C = Conjunto de ciudades
+
+    public BestEffort(int cantCiudades, Traslado[] traslados){ // Complejidad: O(|C| + |T|)
+
+        // Inicializa las listas de traslados para armar el heap
+        ArrayList<HeapElement<Traslado>> listaTrasladosGanancia = new ArrayList<>();
+        ArrayList<HeapElement<Traslado>> listaTrasladosAntiguedad = new ArrayList<>();
+
+        // Procesa cada traslado para asignarle identificadores unicos y los añade a las listas correspondientes
+        // Todas las operaciones realizadas en cada iteracion son O(1)
+        for (int i = 0; i < traslados.length; i++) { // O(T)
             Traslado traslado = traslados[i];
             traslado.setIdGanancia(i);
             traslado.setIdAntiguedad(i);
-            Tupla<Traslado> tuplaTrasladoGanancia = new Tupla<Traslado>(traslado.getHandleGanancia(), traslado);
-            Tupla<Traslado> tuplaTrasladoAntiguedad = new Tupla<Traslado>(traslado.getHandleAntiguedad(), traslado);
-            listaTrasladosGanancia.add(tuplaTrasladoGanancia);
-            listaTrasladosAntiguedad.add(tuplaTrasladoAntiguedad);
+            HeapElement<Traslado> trasladoRedituable = new HeapElement<Traslado>(traslado.getHandleGanancia(), traslado);
+            HeapElement<Traslado> trasladoAntiguedad = new HeapElement<Traslado>(traslado.getHandleAntiguedad(), traslado);
+            listaTrasladosGanancia.add(trasladoRedituable);
+            listaTrasladosAntiguedad.add(trasladoAntiguedad);
         }
-        this.trasladosGanancias = new Heap<Traslado>(listaTrasladosGanancia, new Traslado.ComparadorGananciaNeta());
-        this.trasladosAntiguedad = new Heap<Traslado>(listaTrasladosAntiguedad, new Traslado.ComparadorAntiguedad());
+        this.heapRedituables = new Heap<Traslado>(listaTrasladosGanancia, new Traslado.ComparadorGananciaNeta()); // O(|T|) por algoritmo de Floyd
+        this.heapAntiguedad = new Heap<Traslado>(listaTrasladosAntiguedad, new Traslado.ComparadorAntiguedad()); // O(|T|) por algoritmo de Floyd
         this.ciudadesInfo = new Ciudad[cantCiudades];
-        ArrayList<Tupla<Ciudad>> listaCiudadesSuperavit = new ArrayList<>();
-        for(int i = 0; i < cantCiudades; i++){
+        ArrayList<HeapElement<Ciudad>> listaSuperavit = new ArrayList<>();
+
+        // Todas las operaciones realizadas en cada iteracion son O(1)
+        for(int i = 0; i < cantCiudades; i++){ // O(|C|)
             Ciudad ciudad = new Ciudad(i);
             ciudad.setIdSuperavit(i);
             ciudadesInfo[i] = ciudad;
-            Tupla<Ciudad> tuplaCiudad = new Tupla<Ciudad>(ciudad.getHandleSuperavit(), ciudad);
-            listaCiudadesSuperavit.add(tuplaCiudad);
+            HeapElement<Ciudad> ciudadSuperavit = new HeapElement<Ciudad>(ciudad.getHandleSuperavit(), ciudad);
+            listaSuperavit.add(ciudadSuperavit);
         }
-        this.ciudadesSuperavit = new Heap<Ciudad>(listaCiudadesSuperavit, new Ciudad.ComparadorSuperavit());
+        this.heapSuperavit = new Heap<Ciudad>(listaSuperavit, new Ciudad.ComparadorSuperavit()); // O(|C|) por algoritmo de Floyd
         this.ciudadesConMayorGanancia = new ArrayList<Integer>();
         this.ciudadesConMayorPerdida = new ArrayList<Integer>();
-        this.cantMayorGanancia = 0;
-        this.cantMayorPerdida = 0;
+        this.maxGanancia = 0;
+        this.maxPerdida = 0;
         this.gananciaTotal = 0;
-        this.cantTraslados = 0;
+        this.despachados = 0;
     }
 
-    public void registrarTraslados(Traslado[] traslados){
-        for(int i = 0; i < traslados.length; i++){
+    public void registrarTraslados(Traslado[] traslados){ // O(|traslados| log(|T|)
+        for(int i = 0; i < traslados.length; i++){ // O(|traslados|)
             Traslado traslado = traslados[i];
-            trasladosGanancias.insertar(new Tupla<Traslado>(traslado.getHandleGanancia(), traslado));
-            trasladosAntiguedad.insertar(new Tupla<Traslado>(traslado.getHandleAntiguedad(), traslado));
+            heapRedituables.insertar(new HeapElement<Traslado>(traslado.getHandleGanancia(), traslado)); // O(log T)
+            heapAntiguedad.insertar(new HeapElement<Traslado>(traslado.getHandleAntiguedad(), traslado)); // O(log T)
         }
     }
 
-    public int[] despacharMasRedituables(int n){
-        int m = trasladosGanancias.tamaño();
-        if (n > m){
-            n = m;
-        }
-        int[] despachos = new int[n];
-        for(int i = 0; i < n; i++){
-            Tupla<Traslado> tuplaTraslado = trasladosGanancias.extraerMax(); // despacha del heap y devuelve un traslado
-            trasladosAntiguedad.despacharEnIndice(tuplaTraslado.getObjeto().getIdAntiguedad()); // despacha en trasladosAntiguedad con la referencia correspondiente
-            despachos[i] = tuplaTraslado.getObjeto().getId();
-            actualizarEstadisticas(tuplaTraslado);
-        }
-        return despachos;
-    }
-
-    public int[] despacharMasAntiguos(int n){
-        int m = trasladosAntiguedad.tamaño();
-        if (n > m){
-            n = m;
+    // Extrae n veces un elemento de ambos heaps de traslado, actualiza las estadisticas y reacomoda heapSuperavit
+    public int[] despacharMasRedituables(int n){ // O(n (log(T) + log(C)))
+        int m = heapRedituables.tamaño(); 
+        if (n > m){ 
+            n = m; 
         }
         int[] despachos = new int[n];
-        for(int i = 0; i < n; i++){
-            Tupla<Traslado> tuplaTraslado = trasladosAntiguedad.extraerMax(); // despacha del heap y devuelve un traslado
-            trasladosGanancias.despacharEnIndice(tuplaTraslado.getObjeto().getIdGanancia()); // despacha en trasladosAntiguedad con la referencia correspondiente
-            despachos[i] = tuplaTraslado.getObjeto().getId();
-            actualizarEstadisticas(tuplaTraslado);
+        for(int i = 0; i < n; i++){ // O(n)
+            HeapElement<Traslado> despacho = heapRedituables.extraerMax(); // O(log(|T|)) 
+            heapAntiguedad.eliminar(despacho.getValor().getIdAntiguedad()); // O(log(|T|))
+            despachos[i] = despacho.getValor().getId(); 
+            actualizarEstadisticas(despacho); // O(log (|C|)
         }
-        return despachos;
+        return despachos; 
     }
 
-    private void actualizarEstadisticas(Tupla<Traslado> tuplaTraslado){ // actualiza contadores, info de ciudad y estadisticas de cada ciudad
-        Ciudad origen = ciudadesInfo[tuplaTraslado.getObjeto().getOrigen()];
-        Ciudad destino = ciudadesInfo[tuplaTraslado.getObjeto().getDestino()];
-        int gananciaPorTraslado = tuplaTraslado.getObjeto().getGananciaNeta();
-        gananciaTotal += gananciaPorTraslado;
-        cantTraslados += 1;
-        origen.setGanancia(gananciaPorTraslado); 
-        destino.setPerdida(gananciaPorTraslado);
-        actualizarCiudadConMayorGanancia(origen.getId());
-        actualizarCiudadConMayorPerdida(destino.getId());
-        ciudadesSuperavit.actualizarEnIndice(origen.getIdSuperavit());
-        ciudadesSuperavit.actualizarEnIndice(destino.getIdSuperavit());
-        cantMayorGanancia = ciudadesInfo[ciudadesConMayorGanancia.get(0)].getGanancia();
-        cantMayorPerdida = ciudadesInfo[ciudadesConMayorPerdida.get(0)].getPerdida();
-    }
-
-
-    private void actualizarCiudadConMayorGanancia(int ciudad) {
-        int gananciaCiudad = ciudadesInfo[ciudad].getGanancia();
-        if (ciudadesConMayorGanancia.size() == 0 || (gananciaCiudad == ciudadesInfo[ciudadesConMayorGanancia.get(0)].getGanancia() && gananciaCiudad == cantMayorGanancia)) {
-            ciudadesConMayorGanancia.add(ciudad);
-        } else if (gananciaCiudad >= ciudadesInfo[ciudadesConMayorGanancia.get(0)].getGanancia() && gananciaCiudad != cantMayorGanancia) {
-            ciudadesConMayorGanancia.clear();
-            ciudadesConMayorGanancia.add(ciudad);
+    // Extrae n veces un elemento de ambos heaps de traslado, actualiza las estadisticas y reacomoda heapSuperavit
+    public int[] despacharMasAntiguos(int n){ // O(n (log(|T|) + log(|C|)))
+        int m = heapAntiguedad.tamaño(); 
+        if (n > m){ 
+            n = m; 
         }
-    }
-
-    private void actualizarCiudadConMayorPerdida(int ciudad) {
-        int perdidaCiudad = ciudadesInfo[ciudad].getPerdida();
-        if (ciudadesConMayorPerdida.size() == 0 || (perdidaCiudad == ciudadesInfo[ciudadesConMayorPerdida.get(0)].getPerdida() && perdidaCiudad == cantMayorPerdida)) {
-            ciudadesConMayorPerdida.add(ciudad);
-        } else if (perdidaCiudad >= ciudadesInfo[ciudadesConMayorPerdida.get(0)].getPerdida() && perdidaCiudad != cantMayorPerdida) {
-            ciudadesConMayorPerdida.clear();
-            ciudadesConMayorPerdida.add(ciudad);
+        int[] despachos = new int[n];
+        for(int i = 0; i < n; i++){ // O(n)
+            HeapElement<Traslado> despacho = heapAntiguedad.extraerMax(); // O(log(|T|))
+            heapRedituables.eliminar(despacho.getValor().getIdGanancia()); // O(log(|T|))
+            despachos[i] = despacho.getValor().getId();
+            actualizarEstadisticas(despacho); // O(log(|C|))
         }
+        return despachos; 
     }
 
-    public int ciudadConMayorSuperavit(){
-        return ciudadesSuperavit.devolverMax().getObjeto().getId();
-    }
+    public int ciudadConMayorSuperavit(){ // O(1)
+        Ciudad max = heapSuperavit.consultarMax().getValor();
+        int id = max.getId();
+        return id;
+    } 
 
-    public ArrayList<Integer> ciudadesConMayorGanancia(){
+    public ArrayList<Integer> ciudadesConMayorGanancia(){ // O(1)
         return ciudadesConMayorGanancia;
     }
 
-    public ArrayList<Integer> ciudadesConMayorPerdida(){
+    public ArrayList<Integer> ciudadesConMayorPerdida(){ // O(1) 
         return ciudadesConMayorPerdida;
     }
 
-    public int gananciaPromedioPorTraslado(){
-        return gananciaTotal / cantTraslados;
+    public int gananciaPromedioPorTraslado(){ // O(1)
+        return gananciaTotal / despachados;
+    } 
+
+
+    // FUNCIONES AUXILIARES
+
+    private void actualizarEstadisticas(HeapElement<Traslado> despacho){ // O(log(|C|) 
+        Ciudad origen = ciudadesInfo[despacho.getValor().getOrigen()]; 
+        Ciudad destino = ciudadesInfo[despacho.getValor().getDestino()]; 
+        int gananciaPorTraslado = despacho.getValor().getGananciaNeta(); 
+        // Actualizamos los contadores
+        gananciaTotal += gananciaPorTraslado; 
+        despachados += 1; 
+        // Actualizamos la informacion de las ciudades
+        origen.setGanancia(gananciaPorTraslado); 
+        destino.setPerdida(gananciaPorTraslado); 
+        // Actualizamos las estadisticas de ciudades
+        actualizarCiudadConMayorGanancia(origen.getId());
+        actualizarCiudadConMayorPerdida(destino.getId());
+        heapSuperavit.actualizarEnIndice(origen.getIdSuperavit()); // O(log(|C|)) reacomoda heapSuperavit
+        heapSuperavit.actualizarEnIndice(destino.getIdSuperavit()); // O(log (|C|)) reacomoda heapSuperavit
+        maxGanancia = ciudadesInfo[ciudadesConMayorGanancia.get(0)].getGanancia(); 
+        maxPerdida = ciudadesInfo[ciudadesConMayorPerdida.get(0)].getPerdida();
     }
+
+    private void actualizarCiudadConMayorGanancia(int ciudad) { // O(1)
+        int gananciaCiudad = ciudadesInfo[ciudad].getGanancia();
+        if (ciudadesConMayorGanancia.size() == 0 || (gananciaCiudad == ciudadesInfo[ciudadesConMayorGanancia.get(0)].getGanancia() && gananciaCiudad == maxGanancia)) {
+            ciudadesConMayorGanancia.add(ciudad); 
+        } else if (gananciaCiudad >= ciudadesInfo[ciudadesConMayorGanancia.get(0)].getGanancia() && gananciaCiudad != maxGanancia) { 
+            ciudadesConMayorGanancia.clear(); 
+            ciudadesConMayorGanancia.add(ciudad);
+        }
+    }
+
+    private void actualizarCiudadConMayorPerdida(int ciudad) { // O(1)
+        int perdidaCiudad = ciudadesInfo[ciudad].getPerdida(); 
+        if (ciudadesConMayorPerdida.size() == 0 || (perdidaCiudad == ciudadesInfo[ciudadesConMayorPerdida.get(0)].getPerdida() && perdidaCiudad == maxPerdida)) {
+            ciudadesConMayorPerdida.add(ciudad); 
+        } else if (perdidaCiudad >= ciudadesInfo[ciudadesConMayorPerdida.get(0)].getPerdida() && perdidaCiudad != maxPerdida) {
+            ciudadesConMayorPerdida.clear(); 
+            ciudadesConMayorPerdida.add(ciudad);
+        }
+    }
+
+
 }
