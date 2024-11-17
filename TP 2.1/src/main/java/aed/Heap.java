@@ -73,7 +73,7 @@ public class Heap<T> {
     }
 
     public void heapifyUp(int i){ // O(log(N))
-        int padre = (i - 1) / 2;
+        int padre = padre(i);
          if (i > 0 && comparador.compare(datos.get(i).getValor(), datos.get(padre).getValor()) > 0){
             swap(i, padre);
             heapifyUp(padre);
@@ -81,8 +81,8 @@ public class Heap<T> {
     }
 
     public void heapifyDown(int i){ // O(log(N))
-        int hijoIzq = 2 * i + 1;
-        int hijoDer = 2 * i + 2;
+        int hijoIzq = hijoIzq(i);
+        int hijoDer = hijoDer(i);
         int mayor = i;
 
         if (hijoIzq < datos.size() && comparador.compare(datos.get(hijoIzq).getValor(), datos.get(mayor).getValor()) > 0){
@@ -107,6 +107,18 @@ public class Heap<T> {
         tempi.setHandle(j);
         datos.set(i, tempj);
         datos.set(j, tempi);
+    }
+
+    public int padre(int indice) { // O(1)
+        return (indice - 1) / 2;
+    }
+
+    public int hijoIzq(int indice) { // O(1)
+        return 2 * indice + 1;
+    }
+
+    public int hijoDer(int indice) { // O(1)
+        return 2 * indice + 2;
     }
 
 }
